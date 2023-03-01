@@ -1,12 +1,12 @@
 """
-Creator: HOCQUET Florian, Landza HOUDI
-Date: 30/09/2022
+Creator: Flokk
+Date: 01/03/2023
 Version: 1.0
 
-Purpose: Manages the project.
+Purpose:
 """
 
-# IMPORT: utils
+# IMPORT: toolbox_ml
 import argparse
 
 # IMPORT: deep learning
@@ -21,12 +21,12 @@ warnings.filterwarnings("ignore")
 
 
 def get_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Get model training parameters.")
+    parser = argparse.ArgumentParser(description="Get models training parameters.")
 
     parser.add_argument("-s", "--src", type=str, nargs="?", help="the dataset's path.")
 
-    parser.add_argument("-m", "--model", type=str, nargs="?", default=None,
-                        help="the model's path.")
+    parser.add_argument("-m", "--models", type=str, nargs="?", default=None,
+                        help="the models's path.")
 
     parser.add_argument("-p", "--pipe", type=str, nargs="?",
                         choices=["train", "inference"], default="train",
@@ -39,7 +39,7 @@ def get_parser() -> argparse.ArgumentParser:
                         help="the number of data to train on.")
 
     parser.add_argument("-d", "--dim", type=str, nargs="?", default="2D",
-                        help="the model's data dimension.")
+                        help="the models's data dimension.")
 
     parser.add_argument("-ph", "--patch_height", type=int, nargs="?", default=5,
                         help="the height of the patches in 2.5D.")
