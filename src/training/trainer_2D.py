@@ -50,7 +50,7 @@ class Trainer2D(Trainer):
         # Mother Class
         super(Trainer2D, self).__init__(params)
 
-        # Model and data
+        # Model and dataset
         self._model = UNet2D(model_path)
         self._loader = Loader2D(params, data_path)
 

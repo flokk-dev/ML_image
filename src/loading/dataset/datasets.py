@@ -6,7 +6,7 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: data loading
+# IMPORT: dataset loading
 from .dataset import DataSet
 
 
@@ -16,7 +16,8 @@ class DataSet2D(DataSet):
         super(DataSet2D, self).__init__(params, input_paths, target_paths)
 
     def __getitem__(self, index: int) -> tuple:
-        return self._data_loader(self._input_paths[index]), self._data_loader(self._target_paths[index])
+        return self._data_loader(self._input_paths[index]), \
+            self._data_loader(self._target_paths[index])
 
 
 class DataSet3D(DataSet):
@@ -25,7 +26,7 @@ class DataSet3D(DataSet):
         super(DataSet3D, self).__init__(params, input_paths, target_paths)
 
         # Components
-        self._data_chopper = self._data_loaders[params["dim"]]
+        self._data_chopper = self._data_choppers[params["dim"]]
 
     def __getitem__(self, index: int) -> tuple:
         input_tensor = self._data_loader(self._input_paths[index])

@@ -6,9 +6,10 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: data loading
+# IMPORT: dataset loading
+import cv2
+
 import numpy as np
-import skimage
 import torch
 import zstd
 
@@ -21,8 +22,11 @@ class ImageLoader(DataLoader):
         # Mother Class
         super(ImageLoader, self).__init__()
 
-    def _load(self, path):
-        array = skimage.io.imread(path).copy()
+        # Attributes
+        self._file_extensions = ["png", "jpg", "jpeg"]
+
+    def _load(self, path: str):
+        array = cv2.imread(path, cv2.IMREAD_UNCHANGED)
         return torch.from_numpy(array).type(torch.float32)
 
 
@@ -31,25 +35,30 @@ class NumpyLoader(DataLoader):
         # Mother Class
         super(NumpyLoader, self).__init__()
 
-    def _load(self, path):
+        # Attributes
+        self._file_extensions = ["npy"]
+
+    def _load(self, path: str):
         array = np.load(path).copy()
         return torch.from_numpy(array).type(torch.float32)
-
 
 class ZSTDLoader(DataLoader):
     def __init__(self):
         # Mother Class
         super(ZSTDLoader, self).__init__()
 
-    def _load(self, path):
-        volume = np.load(path, allow_pickle=True)
-        header = volume["header"][()]
+        # Attributes
+        self._file_extensions = ["npz"]
 
-        volume = zstd.decompress(volume["data"])
-        volume = np.frombuffer(volume, dtype=np.float32).copy()
-        volume = np.reshape(volume, header["shape"])
+    def _load(self, path: str):
+        array = np.load(path, allow_pickle=True)
+        header = array["header"][()]
 
-        return torch.from_numpy(volume).type(torch.float32)
+        array = zstd.decompress(array["data"])
+        array = np.frombuffer(array, dtype=header["dtype"]).copy()
+        array = np.reshape(array, header["shape"])
+
+        return torch.from_numpy(array).type(torch.float32)
 
 
 class TensorLoader(DataLoader):
@@ -57,5 +66,8 @@ class TensorLoader(DataLoader):
         # Mother Class
         super(TensorLoader, self).__init__()
 
-    def _load(self, path):
+        # Attributes
+        self._file_extensions = ["pt"]
+
+    def _load(self, path: str):
         return torch.load(path).type(torch.float32)

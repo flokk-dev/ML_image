@@ -49,7 +49,7 @@ class Trainer25D(Trainer):
         # Mother Class
         super(Trainer25D, self).__init__(params)
 
-        # Model and data
+        # Model and dataset
         self._model = SwinUNETR25D(model_path, in_channels=self._params["patch_height"])
         self._loader = Loader25D(params, data_path)
 

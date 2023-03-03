@@ -6,7 +6,7 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: deep learning
+# IMPORT: dataset loading
 from torch.utils.data import Dataset
 
 # IMPORT: project
@@ -19,6 +19,9 @@ class DataSet(Dataset):
     _data_choppers = {2: DataChopper2D, 2.5: DataChopper25D, 3: DataChopper3D}
 
     def __init__(self, params: dict, input_paths: list, target_paths: list):
+        # Mother Class
+        super(DataSet, self).__init__()
+
         # Attributes
         self._params = params
 

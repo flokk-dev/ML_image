@@ -9,7 +9,7 @@ Purpose:
 # IMPORT: utils
 import datetime
 
-# IMPORT: data processing
+# IMPORT: dataset processing
 import numpy as np
 import torch
 

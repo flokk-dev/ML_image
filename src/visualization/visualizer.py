@@ -3,13 +3,13 @@ Creator: HOCQUET Florian, LANDZA Houdi
 Date: 30/09/2022
 Version: 1.0
 
-Purpose: Links the training's data to a web visualiser.
+Purpose: Links the training's dataset to a web visualiser.
 """
 
 # IMPORT: toolbox_ml
 import os
 
-# IMPORT: data visualization
+# IMPORT: dataset visualization
 import wandb
 
 # IMPORT: deep learning

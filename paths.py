@@ -20,6 +20,12 @@ RESOURCES
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources")
 
 """
+TEST
+"""
+TEST_PATH = os.path.join(ROOT_PATH, "test")
+DATA_TEST_PATH = os.path.join(TEST_PATH, "data")
+
+"""
 MODELS
 """
 MODELS_PATH = os.path.join(RESOURCES_PATH, "models")

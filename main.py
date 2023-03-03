@@ -36,10 +36,10 @@ def get_parser() -> argparse.ArgumentParser:
                         help="the loading method.")
 
     parser.add_argument("-n", "--nb_data", type=int, nargs="?", default=1000,
-                        help="the number of data to train on.")
+                        help="the number of dataset to train on.")
 
     parser.add_argument("-d", "--dim", type=str, nargs="?", default="2D",
-                        help="the models's data dimension.")
+                        help="the models's dataset dimension.")
 
     parser.add_argument("-ph", "--patch_height", type=int, nargs="?", default=5,
                         help="the height of the patches in 2.5D.")

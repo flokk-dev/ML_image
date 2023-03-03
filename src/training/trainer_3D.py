@@ -6,7 +6,7 @@ Version: 1.0
 Purpose: Trains a given 3D models.
 """
 
-# IMPORT: data processing
+# IMPORT: dataset processing
 
 # IMPORT: deep learning
 from torch import optim
@@ -51,7 +51,7 @@ class Trainer3D(Trainer):
         # Mother Class
         super(Trainer3D, self).__init__(params)
 
-        # Model and data
+        # Model and dataset
         self._model = AttentionUnet3D(model_path)
         self._loader = Loader3D(params, data_path)
         

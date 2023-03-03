@@ -61,7 +61,7 @@ class Trainer:
         - params (dict): the training's parameters.
         - tuning (bool): if True, tune the models.
         """
-        # Model and data
+        # Model and dataset
         self._model = None
         self._name = None
 
