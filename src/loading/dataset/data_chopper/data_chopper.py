@@ -11,12 +11,12 @@ import torch
 
 
 class DataChopper:
-    def __init__(self, params: dict):
+    def __init__(self):
         # Attributes
-        self._params = params
+        self._patch_height = 5
 
-    def _chopping(self, input_tensor: torch.Tensor, target_tensor: torch.Tensor) -> tuple:
+    def _chopping(self, input_tensor, target_tensor=None):
         raise NotImplementedError()
 
-    def __call__(self, input_tensor: torch.Tensor, target_tensor: torch.Tensor) -> tuple:
+    def __call__(self, input_tensor, target_tensor=None):
         return self._chopping(input_tensor, target_tensor)

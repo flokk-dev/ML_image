@@ -25,7 +25,7 @@ class ImageLoader(DataLoader):
         # Attributes
         self._file_extensions = ["png", "jpg", "jpeg"]
 
-    def _load(self, path: str):
+    def _load(self, path):
         array = cv2.imread(path, cv2.IMREAD_UNCHANGED)
         return torch.from_numpy(array).type(torch.float32)
 
@@ -38,9 +38,10 @@ class NumpyLoader(DataLoader):
         # Attributes
         self._file_extensions = ["npy"]
 
-    def _load(self, path: str):
+    def _load(self, path):
         array = np.load(path).copy()
         return torch.from_numpy(array).type(torch.float32)
+
 
 class ZSTDLoader(DataLoader):
     def __init__(self):
@@ -50,7 +51,7 @@ class ZSTDLoader(DataLoader):
         # Attributes
         self._file_extensions = ["npz"]
 
-    def _load(self, path: str):
+    def _load(self, path):
         array = np.load(path, allow_pickle=True)
         header = array["header"][()]
 
@@ -69,5 +70,5 @@ class TensorLoader(DataLoader):
         # Attributes
         self._file_extensions = ["pt"]
 
-    def _load(self, path: str):
+    def _load(self, path):
         return torch.load(path).type(torch.float32)

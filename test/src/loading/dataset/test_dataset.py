@@ -8,155 +8,290 @@ Purpose:
 
 # IMPORT: utils
 import os
+import torch
 
 # IMPORT: test
 import pytest
 
-# IMPORT: deep learning
-import torch
-
 # IMPORT: project
 import paths
+
+from src.loading.dataset.data_loader import TensorLoader
 from src.loading.dataset import DataSet, DataSet2D, DataSet3D
 
 
-"""
-CONSTANT
-"""
+# -------------------- CONSTANT -------------------- #
 
-DICO = {
-    "lazy_loading": True,
-    "data_augmentation": False,
-    "nb_data": 3,
-    "patch_height": 5,
-    "batch_size": 32,
-    "epochs": 25,
-    "workers": 2,
-    "lr": 1e-2,
-    "lr_multiplier": 0.75,
-    "valid_coeff": 0.2,
+data_paths = {
+    "image": {
+        "2D": os.path.join(paths.DATA_TEST_PATH, "2D", "image", "input.png"),
+        "3D": os.path.join(paths.DATA_TEST_PATH, "3D", "image", "input.png"),
+    },
+    "tensor": {
+        "2D": os.path.join(paths.DATA_TEST_PATH, "2D", "tensor", "input.pt"),
+        "3D": os.path.join(paths.DATA_TEST_PATH, "3D", "tensor", "input.pt"),
+    },
 }
 
 
-"""
-TEST
-"""
+# -------------------- FIXTURES -------------------- #
 
-
-# DATASET
 @pytest.fixture(scope="function")
 def dataset():
-    dataset = DataSet(DICO, DATA_DICO, INPUT_PATH, TARGET_PATH)
-    return dataset
+    return DataSet(
+        params={"file_type": "tensor", "dim": 2},
+        input_paths=[data_paths["image"]["2D"], data_paths["tensor"]["2D"]],
+        target_paths=[data_paths["image"]["2D"], data_paths["tensor"]["2D"]],
+    )
 
 
-def test_load_volume(dataset):
-    volume = dataset._load_volume(INPUT_PATH[0], DATA_DICO[9]["shape"])
-
-    assert volume.shape == torch.Size([1, 103, 512, 512])
-    assert isinstance(volume, torch.Tensor)
-
-    gc.collect()
-
-
-# DATASET 2D
 @pytest.fixture(scope="function")
-def dataset2D():
-    dataset2D = DataSet2D(DICO, DATA_DICO, INPUT_PATH, TARGET_PATH)
-    return dataset2D
+def dataset_2d():
+    return DataSet2D(
+        params={"file_type": "tensor", "dim": 2},
+        input_paths=[data_paths["tensor"]["2D"], data_paths["image"]["2D"], data_paths["tensor"]["3D"]],
+        target_paths=[data_paths["tensor"]["2D"], data_paths["image"]["2D"], data_paths["tensor"]["3D"]],
+    )
 
 
-def test_my_collate_dataset2D(dataset2D):
-    input_volume = dataset2D._load_volume(INPUT_PATH[0], DATA_DICO[9]["shape"])
-    target_volume = dataset2D._load_volume(TARGET_PATH[0], DATA_DICO[9]["shape"])
-
-    input_volume, target_volume = [input_volume], [target_volume]
-    assert isinstance(dataset2D._my_collate(input_volume, target_volume), tuple)
-
-    input_volume, target_volume = dataset2D._my_collate(input_volume, target_volume)
-
-    # INPUT
-    assert isinstance(input_volume, torch.Tensor)
-
-    input_shape = input_volume.shape
-    assert len(input_shape) == 4
-
-    assert input_shape[1:] == torch.Size([1, 512, 512])
-
-    # TARGET
-    assert isinstance(target_volume, torch.Tensor)
-
-    target_shape = target_volume.shape
-    assert len(target_shape) == 4
-    assert target_shape[1:] == torch.Size([1, 512, 512])
-
-    gc.collect()
-
-
-# DATASET 2.5D
 @pytest.fixture(scope="function")
-def dataset25D():
-    dataset25D = DataSet25D(DICO, DATA_DICO, INPUT_PATH, TARGET_PATH)
-    return dataset25D
+def dataset_3d():
+    return DataSet3D(
+        params={"file_type": "tensor", "dim": 2},
+        input_paths=[data_paths["image"]["2D"], data_paths["tensor"]["2D"]],
+        target_paths=[data_paths["image"]["2D"], data_paths["tensor"]["2D"]],
+    )
 
 
-def test_my_collate_dataset25D(dataset25D):
-    input_volume = dataset25D._load_volume(INPUT_PATH[0], DATA_DICO[9]["shape"])
-    target_volume = dataset25D._load_volume(TARGET_PATH[0], DATA_DICO[9]["shape"])
-
-    input_volume, target_volume = [input_volume], [target_volume]
-    assert isinstance(dataset25D._my_collate(input_volume, target_volume), tuple)
-
-    input_volume, target_volume = dataset25D._my_collate(input_volume, target_volume)
-
-    # INPUT
-    assert isinstance(input_volume, torch.Tensor)
-
-    input_shape = input_volume.shape
-    assert len(input_shape) == 4
-
-    assert input_shape[1:] == torch.Size([5, 512, 512])
-
-    # TARGET
-    assert isinstance(target_volume, torch.Tensor)
-
-    target_shape = target_volume.shape
-    assert len(target_shape) == 4
-
-    assert target_shape[1:] == torch.Size([1, 512, 512])
-
-    gc.collect()
+# -------------------- DATASET -------------------- #
 
 
-# DATASET 3D
-@pytest.fixture(scope="function")
-def dataset3D():
-    dataset3D = DataSet3D(DICO, DATA_DICO, INPUT_PATH, TARGET_PATH)
-    return dataset3D
+def test_dataset(dataset):
+    assert len(dataset) == 2
+
+    with pytest.raises(NotImplementedError):
+        input_tensor, target_tensor = dataset[0]
 
 
-def test_my_collate_dataset3D(dataset3D):
-    input_volume = dataset3D._load_volume(INPUT_PATH[0], DATA_DICO[9]["shape"])
-    target_volume = dataset3D._load_volume(TARGET_PATH[0], DATA_DICO[9]["shape"])
+# -------------------- DATASET 2D -------------------- #
 
-    input_volume, target_volume = [input_volume], [target_volume]
-    assert isinstance(dataset3D._my_collate(input_volume, target_volume), tuple)
 
-    input_volume, target_volume = dataset3D._my_collate(input_volume, target_volume)
+def test_dataset_2d_adjust_shape(dataset_2d):
+    # 2D -> shape == 1
+    tensor = torch.Tensor(32)
+    with pytest.raises(ValueError):
+        dataset_2d._adjust_shape(tensor)
 
-    # INPUT
-    assert isinstance(input_volume, torch.Tensor)
+    # 2D -> shape == 2
+    tensor = torch.Tensor(32, 32)
+    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32))
 
-    input_shape = input_volume.shape
-    assert len(input_shape) == 5
-    assert input_shape[1:] == torch.Size([1, 64, 64, 64])
+    # 2D -> shape == 3
+    tensor = torch.Tensor(1, 32, 32)
+    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32))
 
-    # TARGET
-    assert isinstance(target_volume, torch.Tensor)
+    # 2D -> shape == 3
+    tensor = torch.Tensor(32, 32, 3)
+    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
 
-    target_shape = target_volume.shape
-    assert len(target_shape) == 5
+    # 2D -> shape == 3
+    tensor = torch.Tensor(3, 32, 32)
+    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
 
-    assert target_shape[1:] == torch.Size([1, 64, 64, 64])
+    # 2D -> shape == 4
+    tensor = torch.Tensor(1, 3, 32, 32)
+    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
 
-    gc.collect()
+    # 2D -> shape == 4
+    tensor = torch.Tensor(1, 32, 32, 3)
+    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
+
+    # 2D -> shape == 4
+    tensor = torch.Tensor(3, 3, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_2d._adjust_shape(tensor)
+
+    # 2D -> shape == 5
+    tensor = torch.Tensor(1, 1, 32, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_2d._adjust_shape(tensor)
+
+    # 2D -> shape with + 2 > 5
+    tensor = torch.Tensor(20, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_2d._adjust_shape(tensor)
+
+    # 2D -> shape with + 2 > 5
+    tensor = torch.Tensor(32, 32, 20)
+    with pytest.raises(ValueError):
+        dataset_2d._adjust_shape(tensor)
+
+    # 2D -> shape with + 2 > 5
+    tensor = torch.Tensor(1, 20, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_2d._adjust_shape(tensor)
+
+    # 3D instead of 2D
+    tensor = TensorLoader()(data_paths["tensor"]["3D"])
+    with pytest.raises(ValueError):
+        dataset_2d._adjust_shape(tensor)
+
+
+def test_dataset_2d_getitem(dataset_2d):
+    # 2D
+    input_tensor, target_tensor = dataset_2d[0]
+
+    assert isinstance(input_tensor, torch.Tensor)
+    assert isinstance(target_tensor, torch.Tensor)
+
+    assert input_tensor.shape == torch.Size((1, 1, 32, 32))
+    assert input_tensor.shape == torch.Size((1, 1, 32, 32))
+
+    # Not a tensor
+    with pytest.raises(ValueError):
+        input_tensor, target_tensor = dataset_2d[1]
+
+    # 3D instead of 2D
+    with pytest.raises(ValueError):
+        input_tensor, target_tensor = dataset_2d[2]
+
+
+# -------------------- DATASET 3D -------------------- #
+
+
+def test_dataset_3d_adjust_shape(dataset_3d):
+    # 2D -> shape == 1
+    tensor = torch.Tensor(32)
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+    # 2D -> shape == 2
+    tensor = torch.Tensor(32, 32)
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+    # 2D -> shape == 3
+    tensor = torch.Tensor(32, 32, 32)
+    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32, 32))
+
+    # 2D -> shape == 4
+    tensor = torch.Tensor(1, 32, 32, 32)
+    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32, 32))
+
+    # 2D -> shape == 4
+    tensor = torch.Tensor(32, 32, 32, 3)
+    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
+
+    # 2D -> shape == 4
+    tensor = torch.Tensor(3, 32, 32, 32)
+    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
+
+    # 2D -> shape == 5
+    tensor = torch.Tensor(1, 3, 32, 32, 32)
+    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
+
+    # 2D -> shape == 5
+    tensor = torch.Tensor(1, 32, 32, 32, 3)
+    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
+
+    # 2D -> shape == 5
+    tensor = torch.Tensor(3, 3, 32, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+    # 2D -> shape == 6
+    tensor = torch.Tensor(1, 1, 32, 32, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+    # 2D -> shape with + 3 > 5
+    tensor = torch.Tensor(20, 32, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+    # 2D -> shape with + 3 > 5
+    tensor = torch.Tensor(32, 32, 32, 20)
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+    # 2D -> shape with + 3 > 5
+    tensor = torch.Tensor(1, 20, 32, 32, 32)
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+    # 2D instead of 3D
+    tensor = TensorLoader()(data_paths["tensor"]["2D"])
+    with pytest.raises(ValueError):
+        dataset_3d._adjust_shape(tensor)
+
+
+def test_dataset_3d_getitem(dataset_3d):
+    # Not a tensor
+    with pytest.raises(ValueError):
+        input_tensor, target_tensor = dataset_3d[0]
+
+    # 2D instead of 3D
+    with pytest.raises(ValueError):
+        input_tensor, target_tensor = dataset_3d[1]
+
+
+def test_dataset_3d_2d_getitem():
+    # 3D to 2D
+    dataset = DataSet3D(
+        params={"file_type": "tensor", "dim": 2},
+        input_paths=[data_paths["tensor"]["3D"]],
+        target_paths=[data_paths["tensor"]["3D"]]
+    )
+    input_tensor, target_tensor = dataset[0]
+
+    assert isinstance(input_tensor, torch.Tensor)
+    assert input_tensor.shape == torch.Size((32, 1, 32, 32))
+
+    assert isinstance(target_tensor, torch.Tensor)
+    assert target_tensor.shape == torch.Size((32, 1, 32, 32))
+
+    # 3D to 2D without target
+    dataset = DataSet3D(
+        params={"file_type": "tensor", "dim": 2},
+        input_paths=[data_paths["tensor"]["3D"]]
+    )
+
+    with pytest.raises(ValueError):
+        input_tensor, target_tensor = dataset[0]
+
+    input_tensor = dataset[0]
+    assert isinstance(input_tensor, torch.Tensor)
+    assert input_tensor.shape == torch.Size((32, 1, 32, 32))
+
+
+def test_dataset_3d_25d_getitem():
+    # 3D to 2D
+    dataset = DataSet3D(
+        params={"file_type": "tensor", "dim": 2.5},
+        input_paths=[data_paths["tensor"]["3D"]],
+        target_paths=[data_paths["tensor"]["3D"]]
+    )
+    input_tensor, target_tensor = dataset[0]
+
+    assert isinstance(input_tensor, torch.Tensor)
+    assert input_tensor.shape == torch.Size((28, 5, 32, 32))
+
+    assert isinstance(target_tensor, torch.Tensor)
+    assert target_tensor.shape == torch.Size((28, 1, 32, 32))
+
+    # 3D to 2D without target
+    dataset = DataSet3D(
+        params={"file_type": "tensor", "dim": 2.5},
+        input_paths=[data_paths["tensor"]["3D"]]
+    )
+
+    with pytest.raises(ValueError):
+        input_tensor, target_tensor = dataset[0]
+
+    input_tensor = dataset[0]
+    assert isinstance(input_tensor, torch.Tensor)
+    assert input_tensor.shape == torch.Size((28, 5, 32, 32))
+
+
+def test_dataset_3d_3d_getitem():
+    pass
