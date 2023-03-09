@@ -15,6 +15,7 @@ import pytest
 
 # IMPORT: project
 import paths
+
 from src.loading.dataset.data_loader import DataLoader, \
     ImageLoader, NumpyLoader, ZSTDLoader, TensorLoader
 

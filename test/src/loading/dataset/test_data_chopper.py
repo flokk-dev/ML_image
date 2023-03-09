@@ -16,9 +16,9 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset.data_loader import TensorLoader
-from src.loading.dataset import DataSet3D
 from src.loading.dataset.data_chopper import DataChopper, DataChopper2D, DataChopper25D, DataChopper3D
+from src.loading.dataset.data_loader import TensorLoader
+from src.loading.dataset import DataSet
 
 
 # -------------------- CONSTANT -------------------- #
@@ -38,7 +38,10 @@ def input_target_tensor():
     input_tensor = TensorLoader()(data_paths["tensor"]["3D"])
     target_tensor = TensorLoader()(data_paths["tensor"]["3D"])
 
-    dataset = DataSet3D(params={"file_type": "tensor", "dim": 3}, input_paths=[], target_paths=[])
+    dataset = DataSet(
+        params={"file_type": "tensor", "input_dim": 3, "output_dim": 3},
+        input_paths=[]
+    )
     return dataset._adjust_shape(input_tensor), dataset._adjust_shape(target_tensor)
 
 
