@@ -23,10 +23,6 @@ def get_max_item(dictionary):
     return key, dictionary[key]
 
 
-def numpy_to_tensor(path):
-    return torch.from_numpy(np.load(path).astype(np.int16)).type(torch.float32)
-
-
 def size_of(tensor: torch.Tensor) -> float:
     total = tensor.element_size()
     for shape in tensor.shape:

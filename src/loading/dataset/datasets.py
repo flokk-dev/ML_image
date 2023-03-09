@@ -10,40 +10,47 @@ Purpose:
 from .dataset import DataSet
 
 
-class DataSet2D(DataSet):
-    def __init__(self, params, input_paths, target_paths=None):
+class DataSetUnsupervised(DataSet):
+    def __init__(self, params, input_paths):
         # Mother Class
-        super(DataSet2D, self).__init__(params, input_paths, target_paths)
-
-        # Attributes
-        self._dim = 2
+        super(DataSetUnsupervised, self).__init__(params, input_paths)
 
     def __getitem__(self, index):
-        input_tensor = self._adjust_shape(self._data_loader(self._input_paths[index]))
-        if self._target_paths is None:
+        # LOAD
+        input_tensor = self._data_loader(self._input_paths[index])
+
+        # VERIFY SHAPE
+        self._verify_shape(input_tensor, self._params["input_dim"])
+
+        # ADJUST SHAPE
+        input_tensor = self._adjust_shape(input_tensor, self._params["input_dim"])
+
+        if self._params["input_dim"] == 2:
             return input_tensor
-
-        # TARGET
-        target_tensor = self._adjust_shape(self._data_loader(self._target_paths[index]))
-        return input_tensor, target_tensor
+        return self._data_chopper(input_tensor)
 
 
-class DataSet3D(DataSet):
-    def __init__(self, params, input_paths, target_paths=None):
+class DataSetSupervised(DataSet):
+    def __init__(self, params, input_paths, target_paths):
         # Mother Class
-        super(DataSet3D, self).__init__(params, input_paths, target_paths)
+        super(DataSetSupervised, self).__init__(params, input_paths)
 
         # Attributes
-        self._dim = 3
-
-        # Components
-        self._data_chopper = self._data_choppers[params["dim"]]()
+        self._target_paths = target_paths
 
     def __getitem__(self, index):
-        input_tensor = self._adjust_shape(self._data_loader(self._input_paths[index]))
-        if self._target_paths is None:
-            return self._data_chopper(input_tensor)
+        # LOAD
+        input_tensor = self._data_loader(self._input_paths[index])
+        target_tensor = self._data_loader(self._target_paths[index])
 
-        # TARGET
-        target_tensor = self._adjust_shape(self._data_loader(self._target_paths[index]))
-        return self._data_chopper(input_tensor, target_tensor)
+        # VERIFY SHAPE
+        self._verify_shape(input_tensor, self._params["input_dim"])
+        self._verify_shape(target_tensor, self._params["input_dim"])
+
+        # ADJUST SHAPE
+        input_tensor = self._adjust_shape(input_tensor, self._params["input_dim"])
+        target_tensor = self._adjust_shape(target_tensor, self._params["input_dim"])
+
+        if self._params["input_dim"] == 2:
+            return input_tensor, target_tensor
+        return self._data_chopper(input_tensor), self._data_chopper(target_tensor)
