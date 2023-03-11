@@ -10,47 +10,48 @@ Purpose:
 from .dataset import DataSet
 
 
-class DataSetUnsupervised(DataSet):
-    def __init__(self, params, inputs):
+class DataSet2D(DataSet):
+    def __init__(self, params, inputs, targets=None):
         # Mother Class
-        super(DataSetUnsupervised, self).__init__(params, inputs)
-
-    def __getitem__(self, index):
-        # LOAD
-        input_tensor = self._data_loader(self._inputs[index])
-
-        # VERIFY SHAPE
-        self._verify_shape(input_tensor)
-
-        # ADJUST SHAPE
-        input_tensor = self._adjust_shape(input_tensor)
-
-        if self._params["input_dim"] == 2:
-            return input_tensor
-        return self._data_chopper(input_tensor)
-
-
-class DataSetSupervised(DataSet):
-    def __init__(self, params, input_paths, targets):
-        # Mother Class
-        super(DataSetSupervised, self).__init__(params, input_paths)
+        super(DataSet2D, self).__init__(params, inputs, targets)
 
         # Attributes
-        self._targets = targets
+        self._dim = 2
 
-    def __getitem__(self, index):
-        # LOAD
-        input_tensor = self._data_loader(self._inputs[index])
-        target_tensor = self._data_loader(self._targets[index])
+    def __getitem__(self, idx):
+        # Unsupervised training
+        if self._params["training_type"] == "unsupervised":
+            return self._get_data(self._inputs[idx])
 
-        # VERIFY SHAPE
-        self._verify_shape(input_tensor)
-        self._verify_shape(target_tensor)
+        # Supervised training
+        elif self._params["training_type"] == "supervised":
+            return self._get_data(self._inputs[idx]), self._get_data(self._targets[idx])
 
-        # ADJUST SHAPE
-        input_tensor = self._adjust_shape(input_tensor)
-        target_tensor = self._adjust_shape(target_tensor)
+        # Semi-supervised training
+        elif self._params["training_type"] == "semi-supervised":
+            raise NotImplementedError()
 
-        if self._params["input_dim"] == 2:
-            return input_tensor, target_tensor
-        return self._data_chopper(input_tensor, target_tensor)
+
+class DataSet3D(DataSet):
+    def __init__(self, params, inputs, targets=None):
+        # Mother Class
+        super(DataSet3D, self).__init__(params, inputs, targets)
+
+        # Attributes
+        self._dim = 3
+
+    def __getitem__(self, idx):
+        # Unsupervised training
+        if self._params["training_type"] == "unsupervised":
+            return self._data_chopper(self._get_data(self._inputs[idx]))
+
+        # Supervised training
+        elif self._params["training_type"] == "supervised":
+            return self._data_chopper(
+                self._get_data(self._inputs[idx]),
+                self._get_data(self._targets[idx])
+            )
+
+        # Semi-supervised training
+        elif self._params["training_type"] == "semi-supervised":
+            raise NotImplementedError()

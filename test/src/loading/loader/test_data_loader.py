@@ -16,15 +16,15 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.loader.data_loader import LazyLoader, TensorLoader
-from src.loading.dataset import DataSetSupervised
+from src.loading.loader.data_loader import DataLoader
+from src.loading.dataset import DataSet2D, DataSet3D
 
 
 # -------------------- CONSTANT -------------------- #
 
-data_paths = {
-    "2D": os.path.join(paths.DATA_TEST_PATH, "2D", "tensor", "input.pt"),
-    "3D": os.path.join(paths.DATA_TEST_PATH, "3D", "tensor", "input.pt"),
+DATA_PATHS = {
+    "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "tensor", "input.pt"),
+    "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "tensor", "input.pt"),
 }
 
 LENGHT_TENSOR_3D = 32
@@ -32,48 +32,29 @@ LENGHT_TENSOR_3D = 32
 
 # -------------------- FIXTURES -------------------- #
 
-@pytest.fixture(scope="function")
-def dataset2d():
-    return DataSetSupervised(
-        params={"file_type": "tensor", "input_dim": 2, "output_dim": 2},
-        input_paths=[data_paths["2D"] for i in range(100)],
-        target_paths=[data_paths["2D"] for i in range(100)]
-    )
-
-
-@pytest.fixture(scope="function")
-def dataset3d2d():
-    return DataSetSupervised(
-        params={"file_type": "tensor", "input_dim": 3, "output_dim": 2},
-        input_paths=[data_paths["3D"] for i in range(100)],
-        target_paths=[data_paths["3D"] for i in range(100)]
-    )
-
-
-@pytest.fixture(scope="function")
-def dataset3d25d():
-    return DataSetSupervised(
-        params={"file_type": "tensor", "input_dim": 3, "output_dim": 2.5},
-        input_paths=[data_paths["3D"] for i in range(100)],
-        target_paths=[data_paths["3D"] for i in range(100)]
-    )
-
-
-@pytest.fixture(scope="function")
-def dataset3d3d():
-    return DataSetSupervised(
-        params={"file_type": "tensor", "input_dim": 3, "output_dim": 3},
-        input_paths=[data_paths["3D"] for i in range(100)],
-        target_paths=[data_paths["3D"] for i in range(100)]
+def dataset_to_modify(training_type, lazy_loading, input_dim, output_dim):
+    datasets = {2: DataSet2D, 3: DataSet3D}
+    return datasets[input_dim](
+        params={
+            "training_type": training_type, "file_type": "tensor", "lazy_loading": lazy_loading,
+            "input_dim": input_dim, "output_dim": output_dim
+        },
+        inputs=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)],
+        targets=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)]
     )
 
 
 # -------------------- LAZY LOADER -------------------- #
 
-def test_lazy_loader_2d(dataset2d):
+def test_lazy_loader_2d():
+    dataset = dataset_to_modify(
+        training_type="supervised", lazy_loading=True,
+        input_dim=2, output_dim=2
+    )
+
     # batch size --> from 10 to 20
     for batch_size in range(10, 21):
-        lazy_loader = LazyLoader({"batch_size": batch_size}, dataset2d)
+        lazy_loader = DataLoader({"batch_size": batch_size}, dataset)
 
         for idx, batch in enumerate(lazy_loader):
             assert isinstance(batch, tuple)
@@ -89,10 +70,15 @@ def test_lazy_loader_2d(dataset2d):
                 assert batch[0].shape == torch.Size((batch_length, 1, 32, 32))
 
 
-def test_lazy_loader_3d(dataset3d2d):
+def test_lazy_loader_3d():
+    dataset = dataset_to_modify(
+        training_type="supervised", lazy_loading=True,
+        input_dim=3, output_dim=2
+    )
+
     # batch size --> from 10 to 20
     for batch_size in range(10, 21):
-        lazy_loader = LazyLoader({"batch_size": batch_size}, dataset3d2d)
+        lazy_loader = DataLoader({"batch_size": batch_size}, dataset)
 
         for idx, batch in enumerate(lazy_loader):
             assert isinstance(batch, tuple)
@@ -111,14 +97,18 @@ def test_lazy_loader_3d(dataset3d2d):
 
 # -------------------- TENSOR LOADER -------------------- #
 
-def test_tensor_loader_2d(dataset2d):
+def test_tensor_loader_2d():
+    dataset = dataset_to_modify(
+        training_type="supervised", lazy_loading=False,
+        input_dim=2, output_dim=2
+    )
+
     # batch size --> from 10 to 20
     for batch_size in range(10, 21):
-        tensor_loader = TensorLoader({"batch_size": batch_size, "workers": 2}, dataset2d)
+        tensor_loader = DataLoader({"batch_size": batch_size}, dataset)
 
         for idx, batch in enumerate(tensor_loader):
-            print(type(batch))
-            assert isinstance(batch, torch.Tensor)
+            assert isinstance(batch, tuple)
             assert len(batch) == 2
 
             assert isinstance(batch[0], torch.Tensor)
@@ -131,10 +121,15 @@ def test_tensor_loader_2d(dataset2d):
                 assert batch[0].shape == torch.Size((batch_length, 1, 32, 32))
 
 
-def test_tensor_loader_3d(dataset3d2d):
+def test_tensor_loader_3d():
+    dataset = dataset_to_modify(
+        training_type="supervised", lazy_loading=False,
+        input_dim=3, output_dim=2
+    )
+
     # batch size --> from 10 to 20
     for batch_size in range(10, 21):
-        tensor_loader = TensorLoader({"batch_size": batch_size, "workers": 2}, dataset3d2d)
+        tensor_loader = DataLoader({"batch_size": batch_size}, dataset)
 
         for idx, batch in enumerate(tensor_loader):
             assert isinstance(batch, tuple)

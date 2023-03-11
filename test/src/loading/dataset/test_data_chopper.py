@@ -16,17 +16,18 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset.data_chopper import DataChopper, DataChopper2D, DataChopper25D, DataChopper3D
-from src.loading.dataset.data_loader import TensorLoader
-from src.loading.dataset import DataSet
+from src.loading.dataset import DataSet3D
+
+from src.loading.dataset.data_chopper.data_chopper import DataChopper
+from src.loading.dataset.data_chopper import DataChopper2D, DataChopper25D, DataChopper3D
 
 
 # -------------------- CONSTANT -------------------- #
 
-data_paths = {
+DATA_PATHS = {
     "tensor": {
-        "2D": os.path.join(paths.DATA_TEST_PATH, "2D", "tensor", "input.pt"),
-        "3D": os.path.join(paths.DATA_TEST_PATH, "3D", "tensor", "input.pt"),
+        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "tensor", "input.pt"),
+        "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "tensor", "input.pt"),
     },
 }
 
@@ -35,14 +36,14 @@ data_paths = {
 
 @pytest.fixture(scope="function")
 def input_target_tensor():
-    input_tensor = TensorLoader()(data_paths["tensor"]["3D"])
-    target_tensor = TensorLoader()(data_paths["tensor"]["3D"])
-
-    dataset = DataSet(
-        params={"file_type": "tensor", "input_dim": 3, "output_dim": 3},
-        input_paths=[]
+    dataset = DataSet3D(
+        params={
+            "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
+            "input_dim": 3, "output_dim": 2
+        },
+        inputs=[DATA_PATHS["tensor"]["3D"]], targets=[DATA_PATHS["tensor"]["3D"]]
     )
-    return dataset._adjust_shape(input_tensor), dataset._adjust_shape(target_tensor)
+    return dataset._get_data(dataset._inputs[0]), dataset._get_data(dataset._targets[0])
 
 
 @pytest.fixture(scope="function")

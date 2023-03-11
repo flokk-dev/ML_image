@@ -1,1 +1,1 @@
-from .data_loaders import LazyLoader, TensorLoader
+from .data_loader import DataLoader

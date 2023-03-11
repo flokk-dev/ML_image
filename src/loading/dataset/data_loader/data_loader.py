@@ -9,9 +9,6 @@ Purpose:
 # IMPORT: utils
 import os
 
-# IMPORT: data loading
-import torch
-
 
 class DataLoader:
     def __init__(self):

@@ -6,34 +6,23 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: utils
-import os
-
 # IMPORT: project
-from .loading_manager import LoadingManager
-
-from src.loading.dataset import DataSetUnsupervised, DataSetSupervised
-from .data_loader import LazyLoader, TensorLoader
+from .loading_manager import Loading
 
 
-class LoadingManagerUnsupervised(LoadingManager):
+class LoadingUnsupervised(Loading):
     def __init__(self, params):
         # Mother Class
-        super(LoadingManagerUnsupervised, self).__init__(params)
-
-        # Attributes
-        self._dataset = DataSetUnsupervised
+        super(LoadingUnsupervised, self).__init__(params)
 
     def _order_paths(self, file_paths):
         for idx in range(len(file_paths)):
             self._input_paths.append(file_paths[idx])
 
-    def _generate_data_loader(self):
-        dataset = self._dataset(self._params, self._input_paths)
-
-        if self._params["lazy_loading"]:
-            return LazyLoader(self._params, dataset)
-        return TensorLoader(self._params, dataset)
+    def _generate_dataset(self):
+        return self._datasets[self._params["input_dim"]](
+            self._params, self._input_paths
+        )
 
     def __call__(self, path):
         super().__call__(path)
@@ -42,13 +31,12 @@ class LoadingManagerUnsupervised(LoadingManager):
         return self._generate_data_loader()
 
 
-class LoadingManagerSupervised(LoadingManager):
+class LoadingSupervised(Loading):
     def __init__(self, params):
         # Mother Class
-        super(LoadingManagerSupervised, self).__init__(params)
+        super(LoadingSupervised, self).__init__(params)
 
         # Attributes
-        self._dataset = DataSetSupervised
         self._target_paths = list()
 
     def _order_paths(self, file_paths):
@@ -56,12 +44,10 @@ class LoadingManagerSupervised(LoadingManager):
             self._input_paths.append(file_paths[idx])
             self._target_paths.append(file_paths[idx+1])
 
-    def _generate_data_loader(self):
-        dataset = self._dataset(self._params, self._input_paths, self._target_paths)
-
-        if self._params["lazy_loading"]:
-            return LazyLoader(self._params, dataset)
-        return TensorLoader(self._params, dataset)
+    def _generate_dataset(self):
+        return self._datasets[self._params["input_dim"]](
+            self._params, self._input_paths, self._target_paths
+        )
 
     def __call__(self, path):
         super().__call__(path)

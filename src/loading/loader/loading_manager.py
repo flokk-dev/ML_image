@@ -9,13 +9,17 @@ Purpose:
 # IMPORT: utils
 import os
 
+# IMPORT: project
+from .data_loader import DataLoader
+from src.loading.dataset import DataSet2D, DataSet3D
 
-class LoadingManager:
+
+class Loading:
+    _datasets = {2: DataSet2D, 3: DataSet3D}
+
     def __init__(self, params):
         # Attributes
         self._params = params
-        self._dataset = None
-
         self._input_paths = list()
 
     def _extract_path(self, path):
@@ -27,15 +31,6 @@ class LoadingManager:
 
         self._order_paths(list(sorted(file_paths)))
 
-    def _order_paths(self, file_paths):
-        raise NotImplementedError()
-
-    def _generate_data_loader(self):
-        raise NotImplementedError()
-
-    def __call__(self, path):
-        self._input_paths = list()
-
     @staticmethod
     def _dataset_file_depth(path, dataset_name):
         try:
@@ -44,3 +39,15 @@ class LoadingManager:
 
         except ValueError:
             return len(path.split(os.sep))
+
+    def _order_paths(self, file_paths):
+        raise NotImplementedError()
+
+    def _generate_dataset(self):
+        raise NotImplementedError()
+
+    def _generate_data_loader(self):
+        return DataLoader(self._params, self._generate_dataset())
+
+    def __call__(self, path):
+        self._input_paths = list()
