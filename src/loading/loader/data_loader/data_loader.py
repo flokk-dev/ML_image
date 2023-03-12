@@ -9,9 +9,6 @@ Purpose:
 # IMPORT: dataset loading
 from torch.utils.data import DataLoader as TorchDataLoader
 
-# IMPORT: dataset processing
-import torch
-
 # IMPORT: project
 from src.loading.dataset.dataset import DataSet
 
@@ -30,15 +27,7 @@ class DataLoader(TorchDataLoader):
 
     @staticmethod
     def _collate_fn(data: list) -> tuple:
-        inputs, targets = list(), list()
-        for input_tensor, target_tensor in data:
-            inputs.append(input_tensor)
-            targets.append(target_tensor)
-
-        inputs, targets = torch.cat(inputs, dim=0), torch.cat(targets, dim=0)
-
-        idx = torch.randperm(inputs.shape[0])
-        return inputs[idx], targets[idx]
+        raise NotImplementedError()
 
     def __len__(self):
         return self._length

@@ -26,8 +26,8 @@ from src.loading.dataset.data_chopper import DataChopper2D, DataChopper25D, Data
 
 DATA_PATHS = {
     "tensor": {
-        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "tensor", "input.pt"),
-        "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "tensor", "input.pt"),
+        "2D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D", "tensor", "input.pt"),
+        "3D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D", "tensor", "input.pt"),
     },
 }
 

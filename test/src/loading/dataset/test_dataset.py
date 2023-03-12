@@ -26,11 +26,11 @@ from src.loading.dataset.data_loader import TensorLoader
 
 DATA_PATHS = {
     "image": {
-        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "image", "input.png")
+        "2D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D", "image", "input.png")
     },
     "tensor": {
-        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "tensor", "input.pt"),
-        "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "tensor", "input.pt"),
+        "2D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D", "tensor", "input.pt"),
+        "3D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D", "tensor", "input.pt"),
     },
 }
 

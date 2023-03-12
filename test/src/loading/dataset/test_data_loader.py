@@ -24,28 +24,28 @@ from src.loading.dataset.data_loader import ImageLoader, NumpyLoader, ZSTDLoader
 
 DATA_PATHS = {
     "image": {
-        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "image", "input.png"),
-        "2D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "2D_modalities", "image", "input.png"),
-        "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "image", "input.png"),
-        "3D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "3D_modalities", "image", "input.png"),
+        "2D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D", "image", "input.png"),
+        "2D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D_modalities", "image", "input.png"),
+        "3D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D", "image", "input.png"),
+        "3D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D_modalities", "image", "input.png"),
     },
     "numpy": {
-        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "numpy", "input.npy"),
-        "2D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "2D_modalities", "numpy", "input.npy"),
-        "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "numpy", "input.npy"),
-        "3D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "3D_modalities", "numpy", "input.npy"),
+        "2D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D", "numpy", "input.npy"),
+        "2D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D_modalities", "numpy", "input.npy"),
+        "3D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D", "numpy", "input.npy"),
+        "3D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D_modalities", "numpy", "input.npy"),
     },
     "zstd": {
-        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "zstd", "input.npz"),
-        "2D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "2D_modalities", "zstd", "input.npz"),
-        "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "zstd", "input.npz"),
-        "3D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "3D_modalities", "zstd", "input.npz"),
+        "2D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D", "zstd", "input.npz"),
+        "2D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D_modalities", "zstd", "input.npz"),
+        "3D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D", "zstd", "input.npz"),
+        "3D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D_modalities", "zstd", "input.npz"),
     },
     "tensor": {
-        "2D": os.path.join(paths.TEST_PATH, "data_dim", "2D", "tensor", "input.pt"),
-        "2D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "2D_modalities", "tensor", "input.pt"),
-        "3D": os.path.join(paths.TEST_PATH, "data_dim", "3D", "tensor", "input.pt"),
-        "3D_modalities": os.path.join(paths.TEST_PATH, "data_dim", "3D_modalities", "tensor", "input.pt"),
+        "2D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D", "tensor", "input.pt"),
+        "2D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "2D_modalities", "tensor", "input.pt"),
+        "3D": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D", "tensor", "input.pt"),
+        "3D_modalities": os.path.join(paths.TEST_DATA_PATH, "data_dim", "3D_modalities", "tensor", "input.pt"),
     },
 }
 

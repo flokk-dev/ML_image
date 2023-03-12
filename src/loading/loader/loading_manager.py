@@ -10,7 +10,6 @@ Purpose:
 import os
 
 # IMPORT: project
-from .data_loader import DataLoader
 from src.loading.dataset import DataSet2D, DataSet3D
 
 
@@ -22,32 +21,31 @@ class Loading:
         self._params = params
         self._input_paths = list()
 
-    def _extract_path(self, path):
+    def _extract_paths(self, path):
         file_paths = list()
         for root, dirs, files in os.walk(path, topdown=False):
             for file_path in map(lambda e: os.path.join(root, e), files):
-                if self._dataset_file_depth(file_path, "data") == self._params["file_depth"]:
+                if self._file_depth(file_path, self._params["dataset_name"]) == self._params["file_depth"]:
                     file_paths.append(file_path)
 
-        self._order_paths(list(sorted(file_paths)))
+        return list(sorted(file_paths))
 
     @staticmethod
-    def _dataset_file_depth(path, dataset_name):
+    def _file_depth(path, dataset_name):
+        # try to find "dataset_name" in path
         try:
             idx = path.index(f"{os.sep}{dataset_name}{os.sep}")
-            return len(path[idx+1:].split(os.sep))
-
+            return len(path[idx + 1:].split(os.sep)) - 2
         except ValueError:
-            return len(path.split(os.sep))
-
-    def _order_paths(self, file_paths):
-        raise NotImplementedError()
-
-    def _generate_dataset(self):
-        raise NotImplementedError()
+            # try to find if dataset_name begin the path
+            try:
+                idx = path.index(f"{dataset_name}{os.sep}")
+                return len(path[idx + 1:].split(os.sep)) - 2
+            except ValueError:
+                raise ValueError(f"\"{dataset_name}\" n'apparait pas dans le chemin spécifié.")
 
     def _generate_data_loader(self):
-        return DataLoader(self._params, self._generate_dataset())
+        raise NotImplementedError()
 
     def __call__(self, path):
         self._input_paths = list()

@@ -8,50 +8,54 @@ Purpose:
 
 # IMPORT: project
 from .loading_manager import Loading
+from .data_loader import UnsupervisedDataLoader, SupervisedDataLoader
 
 
-class LoadingUnsupervised(Loading):
+class UnsupervisedLoading(Loading):
     def __init__(self, params):
         # Mother Class
-        super(LoadingUnsupervised, self).__init__(params)
+        super(UnsupervisedLoading, self).__init__(params)
 
-    def _order_paths(self, file_paths):
+    def _extract_paths(self, path):
+        file_paths = super()._extract_paths(path)
+
         for idx in range(len(file_paths)):
             self._input_paths.append(file_paths[idx])
 
-    def _generate_dataset(self):
-        return self._datasets[self._params["input_dim"]](
+    def _generate_data_loader(self):
+        dataset = self._datasets[self._params["input_dim"]](
             self._params, self._input_paths
         )
+        return UnsupervisedDataLoader(self._params, dataset)
 
     def __call__(self, path):
-        super().__call__(path)
-
-        self._extract_path(path)
+        self._extract_paths(path)
         return self._generate_data_loader()
 
 
-class LoadingSupervised(Loading):
+class SupervisedLoading(Loading):
     def __init__(self, params):
         # Mother Class
-        super(LoadingSupervised, self).__init__(params)
+        super(SupervisedLoading, self).__init__(params)
 
         # Attributes
         self._target_paths = list()
 
-    def _order_paths(self, file_paths):
+    def _extract_paths(self, path):
+        file_paths = super()._extract_paths(path)
+
         for idx in range(0, len(file_paths), 2):
             self._input_paths.append(file_paths[idx])
             self._target_paths.append(file_paths[idx+1])
 
-    def _generate_dataset(self):
-        return self._datasets[self._params["input_dim"]](
+    def _generate_data_loader(self):
+        dataset = self._datasets[self._params["input_dim"]](
             self._params, self._input_paths, self._target_paths
         )
+        return SupervisedDataLoader(self._params, dataset)
 
     def __call__(self, path):
-        super().__call__(path)
         self._target_paths = list()
 
-        self._extract_path(path)
+        self._extract_paths(path)
         return self._generate_data_loader()

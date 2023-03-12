@@ -1,1 +1,1 @@
-from .loading_managers import LoadingUnsupervised, LoadingSupervised
+from .loading_managers import UnsupervisedLoading, SupervisedLoading
