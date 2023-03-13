@@ -16,10 +16,10 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.loader.loading_manager import Loading
-from src.loading.loader import UnsupervisedLoading, SupervisedLoading
+from src.loading.loader import Loader
+from src.loading import UnsupervisedLoader, SupervisedLoader
 
-from src.loading.loader.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
+from src.loading.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
 
 
 # -------------------- CONSTANT -------------------- #
@@ -37,7 +37,7 @@ LENGHT_TENSOR_3D = 32
 
 @pytest.fixture(scope="function")
 def loading():
-    return Loading(
+    return Loader(
         params={
             "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
             "file_depth": 0, "dataset_name": "data", "input_dim": 2, "output_dim": 2,
@@ -48,7 +48,7 @@ def loading():
 
 @pytest.fixture(scope="function")
 def unsupervised_loading():
-    return UnsupervisedLoading(
+    return UnsupervisedLoader(
         params={
             "training_type": "unsupervised", "file_type": "tensor", "lazy_loading": True,
             "file_depth": 0, "dataset_name": "data", "input_dim": 2, "output_dim": 2,
@@ -59,7 +59,7 @@ def unsupervised_loading():
 
 @pytest.fixture(scope="function")
 def supervised_loading():
-    return SupervisedLoading(
+    return SupervisedLoader(
         params={
             "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
             "file_depth": 0, "dataset_name": "data", "input_dim": 2, "output_dim": 2,

@@ -13,7 +13,7 @@ import os
 from src.loading.dataset import DataSet2D, DataSet3D
 
 
-class Loading:
+class Loader:
     _datasets = {2: DataSet2D, 3: DataSet3D}
 
     def __init__(self, params):

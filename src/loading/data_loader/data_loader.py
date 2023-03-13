@@ -6,7 +6,7 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: dataset loading
+# IMPORT: data loading
 from torch.utils.data import DataLoader as TorchDataLoader
 
 # IMPORT: project

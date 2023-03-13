@@ -19,7 +19,7 @@ import paths
 from src.loading.dataset.dataset import DataSet
 from src.loading.dataset import DataSet2D, DataSet3D
 
-from src.loading.dataset.data_loader import TensorLoader
+from src.loading.dataset.file_loader import PtLoader
 
 
 # -------------------- CONSTANT -------------------- #
@@ -129,7 +129,7 @@ def test_dataset_verify_shape_2d(dataset_2d):
         dataset_2d._verify_shape(tensor)
 
     # 3D instead of 2D
-    tensor = TensorLoader()(DATA_PATHS["tensor"]["3D"])
+    tensor = PtLoader()(DATA_PATHS["tensor"]["3D"])
     with pytest.raises(ValueError):
         dataset_2d._verify_shape(tensor)
 
@@ -226,7 +226,7 @@ def test_dataset_verify_shape_3d(dataset_3d):
         dataset_3d._verify_shape(tensor)
 
     # 2D instead of 3D
-    tensor = TensorLoader()(DATA_PATHS["tensor"]["2D"])
+    tensor = PtLoader()(DATA_PATHS["tensor"]["2D"])
     with pytest.raises(ValueError):
         dataset_3d._verify_shape(tensor)
 

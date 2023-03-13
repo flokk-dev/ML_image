@@ -6,7 +6,7 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: dataset processing
+# IMPORT: data processing
 import torch
 
 # IMPORT: project

@@ -7,14 +7,14 @@ Purpose:
 """
 
 # IMPORT: project
-from .loading_manager import Loading
-from .data_loader import UnsupervisedDataLoader, SupervisedDataLoader
+from .loader import Loader
+from src.loading.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
 
 
-class UnsupervisedLoading(Loading):
+class UnsupervisedLoader(Loader):
     def __init__(self, params):
         # Mother Class
-        super(UnsupervisedLoading, self).__init__(params)
+        super(UnsupervisedLoader, self).__init__(params)
 
     def _extract_paths(self, path):
         file_paths = super()._extract_paths(path)
@@ -33,10 +33,10 @@ class UnsupervisedLoading(Loading):
         return self._generate_data_loader()
 
 
-class SupervisedLoading(Loading):
+class SupervisedLoader(Loader):
     def __init__(self, params):
         # Mother Class
-        super(SupervisedLoading, self).__init__(params)
+        super(SupervisedLoader, self).__init__(params)
 
         # Attributes
         self._target_paths = list()

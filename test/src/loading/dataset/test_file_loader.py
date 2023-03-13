@@ -16,8 +16,8 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset.data_loader.data_loader import DataLoader
-from src.loading.dataset.data_loader import ImageLoader, NumpyLoader, ZSTDLoader, TensorLoader
+from src.loading.dataset.file_loader.file_loader import FileLoader
+from src.loading.dataset.file_loader import ImageLoader, NpyLoader, NpzLoader, PtLoader
 
 
 # -------------------- CONSTANT -------------------- #
@@ -54,7 +54,7 @@ DATA_PATHS = {
 
 @pytest.fixture(scope="function")
 def data_loader():
-    return DataLoader()
+    return FileLoader()
 
 
 @pytest.fixture(scope="function")
@@ -64,17 +64,17 @@ def image_loader():
 
 @pytest.fixture(scope="function")
 def numpy_loader():
-    return NumpyLoader()
+    return NpyLoader()
 
 
 @pytest.fixture(scope="function")
 def zstd_loader():
-    return ZSTDLoader()
+    return NpzLoader()
 
 
 @pytest.fixture(scope="function")
 def tensor_loader():
-    return TensorLoader()
+    return PtLoader()
 
 
 # -------------------- DATA LOADER -------------------- #

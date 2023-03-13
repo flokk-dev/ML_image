@@ -6,9 +6,6 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: dataset processing
-import torch
-
 
 class DataChopper:
     def __init__(self):

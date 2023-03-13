@@ -12,7 +12,7 @@ from torch import optim
 # IMPORT: project
 import toolbox_ml
 
-from .trainer import Trainer
+from .trainer_tmp import Trainer
 
 from src.loading import Loader25D
 from toolbox_ml.models import SwinUNETR25D

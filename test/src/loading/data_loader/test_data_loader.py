@@ -16,8 +16,8 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.loader.data_loader.data_loader import DataLoader
-from src.loading.loader.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
+from src.loading.data_loader.data_loader import DataLoader
+from src.loading.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
 
 from src.loading.dataset import DataSet2D, DataSet3D
 

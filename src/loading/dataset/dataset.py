@@ -16,12 +16,12 @@ from torch.utils.data import Dataset
 import torch
 
 # IMPORT: project
-from .data_loader import ImageLoader, NumpyLoader, ZSTDLoader, TensorLoader
-from .data_chopper import DataChopper2D, DataChopper25D, DataChopper3D
+from src.loading.dataset.file_loader import ImageLoader, NpyLoader, NpzLoader, PtLoader
+from src.loading.dataset.data_chopper import DataChopper2D, DataChopper25D, DataChopper3D
 
 
 class DataSet(Dataset):
-    _data_loaders = {"image": ImageLoader, "numpy": NumpyLoader, "zstd": ZSTDLoader, "tensor": TensorLoader}
+    _data_loaders = {"image": ImageLoader, "numpy": NpyLoader, "zstd": NpzLoader, "tensor": PtLoader}
     _data_choppers = {2: DataChopper2D, 2.5: DataChopper25D, 3: DataChopper3D}
 
     def __init__(self, params, inputs, targets=None):

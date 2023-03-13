@@ -13,7 +13,7 @@ from torch import optim
 # IMPORT: project
 import toolbox_ml
 
-from .trainer import Trainer
+from .trainer_tmp import Trainer
 
 from src.loading import Loader2D
 from toolbox_ml.models import UNet2D
