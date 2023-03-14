@@ -79,10 +79,10 @@ def test_data_chopper(data_chopper, input_target_tensor):
 # -------------------- DATA CHOPPER 2D -------------------- #
 
 
-def test_data_chopper_2d_chopping(data_chopper_2d, input_target_tensor):
+def test_data_chopper_2d_chop(data_chopper_2d, input_target_tensor):
     # input and target
     input_tensor, target_tensor = input_target_tensor
-    input_tensor, target_tensor = data_chopper_2d._chopping(input_tensor, target_tensor)
+    input_tensor, target_tensor = data_chopper_2d._chop(input_tensor, target_tensor)
 
     assert input_tensor.shape == torch.Size((32, 1, 32, 32))
     assert target_tensor.shape == torch.Size((32, 1, 32, 32))
@@ -90,11 +90,11 @@ def test_data_chopper_2d_chopping(data_chopper_2d, input_target_tensor):
     # input
     input_tensor, target_tensor = input_target_tensor
     with pytest.raises(ValueError):
-        input_tensor, target_tensor = data_chopper_2d._chopping(input_tensor)
+        input_tensor, target_tensor = data_chopper_2d._chop(input_tensor)
 
     # input
     input_tensor, target_tensor = input_target_tensor
-    input_tensor = data_chopper_2d._chopping(input_tensor)
+    input_tensor = data_chopper_2d._chop(input_tensor)
 
     assert input_tensor.shape == torch.Size((32, 1, 32, 32))
 
@@ -121,10 +121,10 @@ def test_data_chopper_2d(data_chopper_2d, input_target_tensor):
 
 # -------------------- DATA CHOPPER 2D -------------------- #
 
-def test_data_chopper_25d_chopping(data_chopper_25d, input_target_tensor):
+def test_data_chopper_25d_chop(data_chopper_25d, input_target_tensor):
     # input and target
     input_tensor, target_tensor = input_target_tensor
-    input_tensor, target_tensor = data_chopper_25d._chopping(input_tensor, target_tensor)
+    input_tensor, target_tensor = data_chopper_25d._chop(input_tensor, target_tensor)
 
     assert isinstance(input_tensor, torch.Tensor)
     assert input_tensor.shape == torch.Size((28, 5, 32, 32))
@@ -135,11 +135,11 @@ def test_data_chopper_25d_chopping(data_chopper_25d, input_target_tensor):
     # input
     input_tensor, target_tensor = input_target_tensor
     with pytest.raises(ValueError):
-        input_tensor, target_tensor = data_chopper_25d._chopping(input_tensor)
+        input_tensor, target_tensor = data_chopper_25d._chop(input_tensor)
 
     # input
     input_tensor, target_tensor = input_target_tensor
-    input_tensor = data_chopper_25d._chopping(input_tensor)
+    input_tensor = data_chopper_25d._chop(input_tensor)
 
     assert isinstance(input_tensor, torch.Tensor)
     assert input_tensor.shape == torch.Size((28, 5, 32, 32))
@@ -171,7 +171,7 @@ def test_data_chopper_25d(data_chopper_25d, input_target_tensor):
 # -------------------- DATASET 3D -------------------- #
 
 
-def test_data_chopper_3d_chopping(data_chopper_3d, input_target_tensor):
+def test_data_chopper_3d_chop(data_chopper_3d, input_target_tensor):
     pass
 
 

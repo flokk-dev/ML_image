@@ -15,9 +15,6 @@ class DataSet2D(DataSet):
         # Mother Class
         super(DataSet2D, self).__init__(params, inputs, targets)
 
-        # Attributes
-        self._dim = 2
-
     def __getitem__(self, idx):
         # Unsupervised training
         if self._params["training_type"] == "unsupervised":
@@ -36,9 +33,6 @@ class DataSet3D(DataSet):
     def __init__(self, params, inputs, targets=None):
         # Mother Class
         super(DataSet3D, self).__init__(params, inputs, targets)
-
-        # Attributes
-        self._dim = 3
 
     def __getitem__(self, idx):
         # Unsupervised training

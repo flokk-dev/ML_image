@@ -21,8 +21,8 @@ from src.loading.dataset.data_chopper import DataChopper2D, DataChopper25D, Data
 
 
 class DataSet(Dataset):
-    _data_loaders = {"image": ImageLoader, "numpy": NpyLoader, "zstd": NpzLoader, "tensor": PtLoader}
-    _data_choppers = {2: DataChopper2D, 2.5: DataChopper25D, 3: DataChopper3D}
+    _FILE_LOADERS = {"image": ImageLoader, "numpy": NpyLoader, "zstd": NpzLoader, "tensor": PtLoader}
+    _DATA_CHOPPERS = {2: DataChopper2D, 2.5: DataChopper25D, 3: DataChopper3D}
 
     def __init__(self, params, inputs, targets=None):
         # Mother Class
@@ -30,29 +30,31 @@ class DataSet(Dataset):
 
         # Attributes
         self._params = params
-        self._dim = None
+        self._dim = params["input_dim"]
 
         self._inputs = inputs
         self._targets = targets
 
         # Components
-        self._data_loader = self._data_loaders[params["file_type"]]()
-        self._data_chopper = self._data_choppers[params["output_dim"]]()
+        self._file_loader = self._FILE_LOADERS[params["file_type"]]()
+        self._data_chopper = self._DATA_CHOPPERS[params["output_dim"]]()
 
         if not self._params["lazy_loading"]:
             self._load_dataset()
 
     def _load_dataset(self):
         for idx, file_path in enumerate(tqdm(self._inputs, desc="Loading the data in RAM.")):
-            self._inputs[idx] = self._data_loader(self._inputs[idx])
+            self._inputs[idx] = self._get_data(self._inputs[idx])
 
             if self._targets is not None:
-                self._targets[idx] = self._data_loader(self._targets[idx])
+                self._targets[idx] = self._get_data(self._targets[idx])
 
     def _get_data(self, tensor):
+        if isinstance(tensor, torch.Tensor):
+            return tensor
+
         # LOAD
-        if self._params["lazy_loading"]:
-            tensor = self._data_loader(tensor)
+        tensor = self._file_loader(tensor)
 
         # VERIFY SHAPE
         self._verify_shape(tensor)
@@ -66,13 +68,13 @@ class DataSet(Dataset):
             raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
 
         # IF not 2d tensor a priori
-        if len(tensor.shape) > self._dim:
-            if torch.sum((torch.Tensor(tuple(tensor.shape)) > 1)) >= len(tensor.shape):
-                raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
-
-        # IF not 2d tensor a priori
         if torch.sum((torch.Tensor(tuple(tensor.shape)) > 5)) > self._dim:
             raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
+
+        # IF not 2d tensor a priori
+        if len(tensor.shape) > self._dim:
+            if torch.sum((torch.Tensor(tuple(tensor.shape)) > 1)) >= self._dim + 2:
+                raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
 
         # IF valid 2d tensor
         return True
