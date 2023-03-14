@@ -30,7 +30,7 @@ class DataSet(Dataset):
 
         # Attributes
         self._params = params
-        self._dim = params["input_dim"]
+        self._dim = None
 
         self._inputs = inputs
         self._targets = targets
@@ -38,9 +38,6 @@ class DataSet(Dataset):
         # Components
         self._file_loader = self._FILE_LOADERS[params["file_type"]]()
         self._data_chopper = self._DATA_CHOPPERS[params["output_dim"]]()
-
-        if not self._params["lazy_loading"]:
-            self._load_dataset()
 
     def _load_dataset(self):
         for idx, file_path in enumerate(tqdm(self._inputs, desc="Loading the data in RAM.")):
