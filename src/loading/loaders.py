@@ -16,8 +16,8 @@ class UnsupervisedLoader(Loader):
         # Mother Class
         super(UnsupervisedLoader, self).__init__(params)
 
-    def _extract_paths(self, path):
-        file_paths = super()._extract_paths(path)
+    def _extract_paths(self, dataset_path):
+        file_paths = super()._extract_paths(dataset_path)
 
         for idx in range(len(file_paths)):
             self._input_paths.append(file_paths[idx])
@@ -28,8 +28,10 @@ class UnsupervisedLoader(Loader):
         )
         return UnsupervisedDataLoader(self._params, dataset)
 
-    def __call__(self, path):
-        self._extract_paths(path)
+    def __call__(self, dataset_path):
+        self._input_paths = list()
+
+        self._extract_paths(dataset_path)
         return self._generate_data_loader()
 
 
@@ -41,8 +43,8 @@ class SupervisedLoader(Loader):
         # Attributes
         self._target_paths = list()
 
-    def _extract_paths(self, path):
-        file_paths = super()._extract_paths(path)
+    def _extract_paths(self, dataset_path):
+        file_paths = super()._extract_paths(dataset_path)
 
         for idx in range(0, len(file_paths), 2):
             self._input_paths.append(file_paths[idx])
@@ -54,8 +56,9 @@ class SupervisedLoader(Loader):
         )
         return SupervisedDataLoader(self._params, dataset)
 
-    def __call__(self, path):
+    def __call__(self, dataset_path):
+        self._input_paths = list()
         self._target_paths = list()
 
-        self._extract_paths(path)
+        self._extract_paths(dataset_path)
         return self._generate_data_loader()

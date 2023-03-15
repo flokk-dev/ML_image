@@ -15,7 +15,7 @@ import toolbox_ml
 from .trainer_tmp import Trainer
 
 from src.loading import Loader25D
-from toolbox_ml.models import SwinUNETR25D
+from src.training.components.models import SwinUNETR25D
 from toolbox_ml.visualizers import Visualizer25D
 
 

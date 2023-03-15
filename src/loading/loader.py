@@ -21,9 +21,9 @@ class Loader:
         self._params = params
         self._input_paths = list()
 
-    def _extract_paths(self, path):
+    def _extract_paths(self, dataset_path):
         file_paths = list()
-        for root, dirs, files in os.walk(path, topdown=False):
+        for root, dirs, files in os.walk(dataset_path, topdown=False):
             for file_path in map(lambda e: os.path.join(root, e), files):
                 if self._file_depth(file_path, self._params["dataset_name"]) == self._params["file_depth"]:
                     file_paths.append(file_path)
@@ -47,5 +47,5 @@ class Loader:
     def _generate_data_loader(self):
         raise NotImplementedError()
 
-    def __call__(self, path):
-        self._input_paths = list()
+    def __call__(self, dataset_path):
+        raise NotImplementedError()

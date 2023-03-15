@@ -17,7 +17,7 @@ import toolbox_ml
 from .trainer_tmp import Trainer
 
 from src.loading import Loader3D
-from toolbox_ml.models import AttentionUnet3D
+from src.training.components.models import AttentionUnet3D
 from toolbox_ml.visualizers import Visualizer3D
 
 
