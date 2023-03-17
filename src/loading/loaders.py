@@ -19,20 +19,30 @@ class UnsupervisedLoader(Loader):
     def _extract_paths(self, dataset_path):
         file_paths = super()._extract_paths(dataset_path)
 
-        for idx in range(len(file_paths)):
-            self._input_paths.append(file_paths[idx])
+        nb_paths = len(file_paths)
+        for idx in range(nb_paths):
+            step = "train" if idx < int(nb_paths*0.8) else "valid"
+            self._input_paths[step].append(file_paths[idx])
 
-    def _generate_data_loader(self):
-        dataset = self._datasets[self._params["input_dim"]](
-            self._params, self._input_paths
+    def _generate_data_loaders(self):
+        # TRAIN
+        train_dataset = self._datasets[self._params["input_dim"]](
+            self._params, self._input_paths["train"]
         )
-        return UnsupervisedDataLoader(self._params, dataset)
+
+        # VALID
+        valid_dataset = self._datasets[self._params["input_dim"]](
+            self._params, self._input_paths["valid"]
+        )
+
+        return UnsupervisedDataLoader(self._params, train_dataset), \
+            UnsupervisedDataLoader(self._params, valid_dataset)
 
     def __call__(self, dataset_path):
-        self._input_paths = list()
+        self._input_paths = {"train": list(), "valid": list()}
 
         self._extract_paths(dataset_path)
-        return self._generate_data_loader()
+        return self._generate_data_loaders()
 
 
 class SupervisedLoader(Loader):
@@ -41,24 +51,35 @@ class SupervisedLoader(Loader):
         super(SupervisedLoader, self).__init__(params)
 
         # Attributes
-        self._target_paths = list()
+        self._target_paths = {"train": list(), "valid": list()}
 
     def _extract_paths(self, dataset_path):
         file_paths = super()._extract_paths(dataset_path)
 
-        for idx in range(0, len(file_paths), 2):
-            self._input_paths.append(file_paths[idx])
-            self._target_paths.append(file_paths[idx+1])
+        nb_paths = len(file_paths)
+        for idx in range(0, nb_paths, 2):
+            step = "train" if idx < int(nb_paths * 0.8) else "valid"
 
-    def _generate_data_loader(self):
-        dataset = self._datasets[self._params["input_dim"]](
-            self._params, self._input_paths, self._target_paths
+            self._input_paths[step].append(file_paths[idx])
+            self._target_paths[step].append(file_paths[idx+1])
+
+    def _generate_data_loaders(self):
+        # TRAIN
+        train_dataset = self._datasets[self._params["input_dim"]](
+            self._params, self._input_paths["train"], self._target_paths["train"]
         )
-        return SupervisedDataLoader(self._params, dataset)
+
+        # VALID
+        valid_dataset = self._datasets[self._params["input_dim"]](
+            self._params, self._input_paths["valid"], self._target_paths["valid"]
+        )
+
+        return SupervisedDataLoader(self._params, train_dataset), \
+            SupervisedDataLoader(self._params, valid_dataset)
 
     def __call__(self, dataset_path):
-        self._input_paths = list()
-        self._target_paths = list()
+        self._input_paths = {"train": list(), "valid": list()}
+        self._target_paths = {"train": list(), "valid": list()}
 
         self._extract_paths(dataset_path)
-        return self._generate_data_loader()
+        return self._generate_data_loaders()

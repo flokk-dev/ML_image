@@ -11,7 +11,7 @@ import torch
 import torchmetrics
 
 # IMPORT: project
-from src.training.components.metric.metric import Metric
+from src.training.learner.metric.metric import Metric
 
 
 class Accuracy(Metric):

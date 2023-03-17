@@ -8,7 +8,6 @@ Purpose:
 
 # IMPORT: deep learning
 import torch
-import torch.nn as nn
 
 
 class Loss:

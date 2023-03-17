@@ -19,7 +19,7 @@ class Loader:
     def __init__(self, params):
         # Attributes
         self._params = params
-        self._input_paths = list()
+        self._input_paths = {"train": list(), "valid": list()}
 
     def _extract_paths(self, dataset_path):
         file_paths = list()
@@ -44,7 +44,7 @@ class Loader:
             except ValueError:
                 raise ValueError(f"\"{dataset_name}\" n'apparait pas dans le chemin spécifié.")
 
-    def _generate_data_loader(self):
+    def _generate_data_loaders(self):
         raise NotImplementedError()
 
     def __call__(self, dataset_path):

@@ -3,10 +3,8 @@ Creator: HOCQUET Florian, LANDZA Houdi
 Date: 30/09/2022
 Version: 1.0
 
-Purpose: Trains a given 3D models.
+Purpose: Trains a given 2.5D models.
 """
-
-# IMPORT: dataset processing
 
 # IMPORT: deep learning
 from torch import optim
@@ -16,14 +14,14 @@ import toolbox_ml
 
 from .trainer_tmp import Trainer
 
-from src.loading import Loader3D
-from src.training.components.models import AttentionUnet3D
-from toolbox_ml.visualizers import Visualizer3D
+from src.loading import Loader25D
+from src.training.learner.components import SwinUNETR25D
+from toolbox_ml.visualizers import Visualizer25D
 
 
-class Trainer3D(Trainer):
+class Trainer25D(Trainer):
     """
-    The class training a given 3D models.
+    The class training a given 2.5D models.
 
     Attributes:
     - _model (Model): the models to train.
@@ -40,7 +38,7 @@ class Trainer3D(Trainer):
 
     def __init__(self, params: dict, data_path: str, model_path: str = None):
         """
-        Initialize the Trainer3D class.
+        Initialize the Trainer25D class.
 
         Parameters:
         - data_path (Model): the path to the dataset.
@@ -49,12 +47,12 @@ class Trainer3D(Trainer):
         - tuning (bool): if True, tune the models.
         """
         # Mother Class
-        super(Trainer3D, self).__init__(params)
+        super(Trainer25D, self).__init__(params)
 
         # Model and dataset
-        self._model = AttentionUnet3D(model_path)
-        self._loader = Loader3D(params, data_path)
-        
+        self._model = SwinUNETR25D(model_path, in_channels=self._params["patch_height"])
+        self._loader = Loader25D(params, data_path)
+
         self._name = f"{toolbox_ml.get_datetime()}_{self._model.name}"
 
         # Parameters
@@ -64,5 +62,5 @@ class Trainer3D(Trainer):
         self._scheduler = optim.lr_scheduler.MultiplicativeLR(self._optimizer, lr_multiplier)
 
         # Launch Visualisation
-        self._visualizer = Visualizer3D(self._name, params=self._params, mode="online")
+        self._visualizer = Visualizer25D(self._name, params=self._params, mode="online")
         self._visualizer.collect_info(self._model)

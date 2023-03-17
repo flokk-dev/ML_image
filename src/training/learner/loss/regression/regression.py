@@ -8,15 +8,14 @@ Purpose:
 
 # IMPORT: deep learning
 import torch
-import torchmetrics
 
 # IMPORT: project
-from src.training.components.metric.metric import Metric
+from src.training.learner.loss.loss import Loss
 
 
-class MAE(Metric):
+class MAELoss(Loss):
     def __init__(self):
-        super(MAE, self).__init__()
+        super(MAELoss, self).__init__()
 
         # Attributes
         self._loss = torch.nn.L1Loss().to(self._DEVICE)
@@ -25,9 +24,9 @@ class MAE(Metric):
         return self._loss(prediction, target)
 
 
-class MSE(Metric):
+class MSELoss(Loss):
     def __init__(self):
-        super(MSE, self).__init__()
+        super(MSELoss, self).__init__()
 
         # Attributes
         self._loss = torch.nn.MSELoss().to(self._DEVICE)
@@ -36,9 +35,9 @@ class MSE(Metric):
         return self._loss(prediction, target)
 
 
-class RMSE(Metric):
+class RMSELoss(Loss):
     def __init__(self):
-        super(RMSE, self).__init__()
+        super(RMSELoss, self).__init__()
 
         # Attributes
         self._loss = torch.nn.MSELoss().to(self._DEVICE)
@@ -47,23 +46,12 @@ class RMSE(Metric):
         return torch.sqrt(self._loss(prediction, target))
 
 
-class PSNR(Metric):
+class HuberLoss(Loss):
     def __init__(self):
-        super(PSNR, self).__init__()
+        super(HuberLoss, self).__init__()
 
         # Attributes
-        self._loss = torchmetrics.PeakSignalNoiseRatio().to(self._DEVICE)
+        self._loss = torch.nn.HuberLoss().to(self._DEVICE)
 
     def __call__(self, prediction, target):
-        return torch.sqrt(self._loss(prediction, target))
-
-
-class SSIM(Metric):
-    def __init__(self):
-        super(SSIM, self).__init__()
-
-        # Attributes
-        self._loss = torchmetrics.StructuralSimilarityIndexMeasure().to(self._DEVICE)
-
-    def __call__(self, prediction, target):
-        return torch.sqrt(self._loss(prediction, target))
+        return self._loss(prediction, target)

@@ -11,7 +11,7 @@ import torch
 import monai
 
 # IMPORT: project
-from src.training.components.loss.loss import Loss, CompositeLoss
+from src.training.learner.loss.loss import Loss, CompositeLoss
 
 
 class CELoss(Loss):

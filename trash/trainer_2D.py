@@ -16,7 +16,7 @@ import toolbox_ml
 from .trainer_tmp import Trainer
 
 from src.loading import Loader2D
-from src.training.components.models import UNet2D
+from src.training.learner.components import UNet2D
 from toolbox_ml.visualizers import Visualizer2D
 
 

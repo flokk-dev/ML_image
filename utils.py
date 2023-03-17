@@ -7,10 +7,10 @@ Purpose:
 """
 
 # IMPORT: utils
+import sys
 import datetime
 
 # IMPORT: dataset processing
-import numpy as np
 import torch
 
 
@@ -29,3 +29,16 @@ def size_of(tensor: torch.Tensor) -> float:
         total *= float(shape)
 
     return total / 1e6
+
+
+def str_to_class(class_name):
+    return getattr(sys.modules[__name__], class_name)
+
+
+def parse_shape(input_shape, target_shape):
+    return {
+        "spatial_dims": len(input_shape) - 2,
+        "img_size": tuple(input_shape[2:]),
+        "in_channels": input_shape[1],
+        "out_channels": target_shape[1]
+    }
