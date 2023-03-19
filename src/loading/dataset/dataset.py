@@ -30,7 +30,7 @@ class DataSet(Dataset):
 
         # Attributes
         self._params = params
-        self._dim = None
+        self.data_info = self._collect_data_info()
 
         self._inputs = inputs
         self._targets = targets
@@ -60,35 +60,45 @@ class DataSet(Dataset):
         return self._adjust_shape(tensor)
 
     def _verify_shape(self, tensor):
+        dim = self._params["input_dim"]
+
         # IF too much dimensions
-        if not self._dim <= len(tensor.shape) <= self._dim + 2:
+        if not dim <= len(tensor.shape) <= dim + 2:
             raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
 
         # IF not 2d tensor a priori
-        if torch.sum((torch.Tensor(tuple(tensor.shape)) > 5)) > self._dim:
+        if torch.sum((torch.Tensor(tuple(tensor.shape)) > 5)) > dim:
             raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
 
         # IF not 2d tensor a priori
-        if len(tensor.shape) > self._dim:
-            if torch.sum((torch.Tensor(tuple(tensor.shape)) > 1)) >= self._dim + 2:
+        if len(tensor.shape) > dim:
+            if torch.sum((torch.Tensor(tuple(tensor.shape)) > 1)) >= dim + 2:
                 raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
 
         # IF valid 2d tensor
         return True
 
     def _adjust_shape(self, tensor):
-        if len(tensor.shape) == self._dim+2:
+        dim = self._params["input_dim"]
+
+        #
+        if len(tensor.shape) == dim+2:
             if tensor.shape[0] == 1:
                 tensor = tensor.squeeze(0)
 
-        if len(tensor.shape) == self._dim+1 and tensor.shape[-1] == min(tensor.shape):
-            dims_order = (self._dim, *(i for i in range(self._dim)))
+        #
+        if len(tensor.shape) == dim+1 and tensor.shape[-1] == min(tensor.shape):
+            dims_order = (dim, *(i for i in range(dim)))
             tensor = torch.permute(tensor, dims_order)
 
-        elif len(tensor.shape) == self._dim:
+        #
+        elif len(tensor.shape) == dim:
             tensor = tensor.unsqueeze(0)
 
         return tensor.unsqueeze(0)
+
+    def _collect_data_info(self):
+        raise NotImplementedError()
 
     def __getitem__(self, idx):
         raise NotImplementedError()

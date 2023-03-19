@@ -17,15 +17,16 @@ from .model import Model
 class UNet(Model, BasicUNet):
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(self, input_shape, target_shape, weights_path=None):
+    def __init__(self, input_shape, weights_path=None):
         # Model mother class
-        Model.__init__(self, input_shape, target_shape, weights_path=None)
+        Model.__init__(self, input_shape, weights_path=None)
 
         # BasicUNet mother class
         BasicUNet.__init__(
             self,
-            spatial_dims=self._params["spatial_dims"],
-            in_channels=self._params["in_channels"], out_channels=self._params["out_channels"],
+            spatial_dims=self._data_info["spatial_dims"],
+            in_channels=self._data_info["in_channels"],
+            out_channels=self._data_info["out_channels"],
             dropout=0.2,
         )
 
@@ -40,15 +41,17 @@ class UNet(Model, BasicUNet):
 class AttentionUNet(Model, AttentionUnet):
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(self, input_shape, target_shape, weights_path=None):
+    def __init__(self, input_shape, weights_path=None):
         # Model mother class
-        Model.__init__(self, input_shape, target_shape, weights_path=None)
+        Model.__init__(self, input_shape, weights_path=None)
 
         # AttentionUnet mother class
         AttentionUnet.__init__(
             self,
-            spatial_dims=self._params["spatial_dims"], channels=(8, 16, 32),
-            in_channels=self._params["in_channels"], out_channels=self._params["out_channels"],
+            spatial_dims=self._data_info["spatial_dims"],
+            channels=(8, 16, 32),
+            in_channels=self._data_info["in_channels"],
+            out_channels=self._data_info["out_channels"],
             strides=(2, 2), dropout=0.2,
         )
 
@@ -63,15 +66,17 @@ class AttentionUNet(Model, AttentionUnet):
 class Transformer(Model, UNETR):
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(self, input_shape, target_shape, weights_path=None):
+    def __init__(self, input_shape, weights_path=None):
         # Model mother class
-        Model.__init__(self, input_shape, target_shape, weights_path=None)
+        Model.__init__(self, input_shape, weights_path=None)
 
         # UNETR mother class
         UNETR.__init__(
             self,
-            img_size=self._params["img_size"], spatial_dims=self._params["spatial_dims"],
-            in_channels=self._params["in_channels"], out_channels=self._params["out_channels"],
+            img_size=self._data_info["img_size"],
+            spatial_dims=self._data_info["spatial_dims"],
+            in_channels=self._data_info["in_channels"],
+            out_channels=self._data_info["out_channels"],
             dropout_rate=0.2
         )
 
@@ -84,15 +89,17 @@ class Transformer(Model, UNETR):
 
 
 class SWinTransformer(Model, SwinUNETR):
-    def __init__(self, input_shape, target_shape, weights_path=None):
+    def __init__(self, input_shape, weights_path=None):
         # Model mother class
-        Model.__init__(self, input_shape, target_shape, weights_path=None)
+        Model.__init__(self, input_shape, weights_path=None)
 
         # SwinUNETR mother class
         SwinUNETR.__init__(
             self,
-            img_size=self._params["img_size"], spatial_dims=self._params["spatial_dims"],
-            in_channels=self._params["in_channels"], out_channels=self._params["out_channels"],
+            img_size=self._data_info["img_size"],
+            spatial_dims=self._data_info["spatial_dims"],
+            in_channels=self._data_info["in_channels"],
+            out_channels=self._data_info["out_channels"],
             drop_rate=0.2
         )
 

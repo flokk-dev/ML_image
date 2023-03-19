@@ -9,13 +9,8 @@ Purpose:
 # IMPORT: utils
 import os
 
-# IMPORT: project
-from src.loading.dataset import DataSet2D, DataSet3D
-
 
 class Loader:
-    _datasets = {2: DataSet2D, 3: DataSet3D}
-
     def __init__(self, params):
         # Attributes
         self._params = params

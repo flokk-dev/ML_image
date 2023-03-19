@@ -9,6 +9,7 @@ Purpose:
 # IMPORT: project
 from .loader import Loader
 from src.loading.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
+from src.loading.dataset import UnsupervisedDataSet, SupervisedDataSet
 
 
 class UnsupervisedLoader(Loader):
@@ -25,18 +26,15 @@ class UnsupervisedLoader(Loader):
             self._input_paths[step].append(file_paths[idx])
 
     def _generate_data_loaders(self):
-        # TRAIN
-        train_dataset = self._datasets[self._params["input_dim"]](
-            self._params, self._input_paths["train"]
-        )
+        # Dataset
+        train_dataset = UnsupervisedDataSet(self._params, self._input_paths["train"])
+        valid_dataset = UnsupervisedDataSet(self._params, self._input_paths["valid"])
 
-        # VALID
-        valid_dataset = self._datasets[self._params["input_dim"]](
-            self._params, self._input_paths["valid"]
-        )
-
-        return UnsupervisedDataLoader(self._params, train_dataset), \
-            UnsupervisedDataLoader(self._params, valid_dataset)
+        # Data loader
+        return {
+            "train": UnsupervisedDataLoader(self._params, train_dataset),
+            "valid": UnsupervisedDataLoader(self._params, valid_dataset)
+        }
 
     def __call__(self, dataset_path):
         self._input_paths = {"train": list(), "valid": list()}
@@ -64,18 +62,20 @@ class SupervisedLoader(Loader):
             self._target_paths[step].append(file_paths[idx+1])
 
     def _generate_data_loaders(self):
-        # TRAIN
-        train_dataset = self._datasets[self._params["input_dim"]](
+        # Dataset
+        train_dataset = SupervisedDataSet(
             self._params, self._input_paths["train"], self._target_paths["train"]
         )
 
-        # VALID
-        valid_dataset = self._datasets[self._params["input_dim"]](
+        valid_dataset = SupervisedDataSet(
             self._params, self._input_paths["valid"], self._target_paths["valid"]
         )
 
-        return SupervisedDataLoader(self._params, train_dataset), \
-            SupervisedDataLoader(self._params, valid_dataset)
+        # Data loader
+        return {
+            "train": SupervisedDataLoader(self._params, train_dataset),
+            "valid": SupervisedDataLoader(self._params, valid_dataset)
+        }
 
     def __call__(self, dataset_path):
         self._input_paths = {"train": list(), "valid": list()}

@@ -14,88 +14,52 @@ from tqdm import tqdm
 import torch
 
 # IMPORT: project
-from src.loading import UnsupervisedLoader, SupervisedLoader
 from .early_stopper import EarlyStopper
-from .learner import Learner
+from .dashboard import Dashboard2D, Dashboard25D, Dashboard3D
 
 
 class Trainer:
-    _LOADERS = {"unsupervised": UnsupervisedLoader, "supervised": SupervisedLoader}
+    _DASHBOARDS = {2: Dashboard2D, 2.5: Dashboard25D, 3: Dashboard3D}
 
-    def __init__(self, params, weights_path):
+    def __init__(self, params):
         # Attributes
         self._params = params
         self._name = None
 
-        self._loss_res = {"train": list(), "valid": list()}
-        self._metrics_res = {
-            metric_name: {"train": list(), "valid": list()}
-            for metric_name in self._params["metrics"]
-        }
-
         # Components
-        self._loader = self._LOADERS[self._params["training_type"]](self._params)
-        self._learner = Learner(self._params, weights_path)
+        self._data_loaders = None
+        self._learner = None
 
         self._early_stopper = EarlyStopper(self._params)
-        self._dashboard = None
+        self._dashboard = self._DASHBOARDS[self._params["input_dim"]](
+            self._params, self._name
+        )
 
-    def _train(self):
+    def _launch(self):
         print("\nLancement de l'entrainement.")
 
         time.sleep(1)
-        for epoch_idx in tqdm(range(self._params["epochs"])):
+        for epoch in tqdm(self._params["nb_epochs"]):
             # Clear cache
             torch.cuda.empty_cache()
 
             # Learn
-            self._train_epoch(step="train")
-            self._train_epoch(step="valid")
+            self._run_epoch(step="train")
+            self._run_epoch(step="valid")
 
-            # Update the dashboard
-            # self._dashboard.update()
+            # Update the epoch
+            self._dashboard.upload_values(self._learner.scheduler.get_last_lr()[0])
+            self._learner.scheduler.step()
 
-            # self._scheduler.step()
+        # End the training
+        time.sleep(30)
+        self._dashboard.shutdown()
 
-        # Save the results and end the visualization
-        # self._save()
-        time.sleep(60)
-
-        # self._dashboard.shutdown()
-    def _train_epoch(self, step):
-        epoch_loss = list()
-        epoch_metric = dict()
-        for key in self._metrics:
-            epoch_metric[key] = list()
-            epoch_metric[f"{key}_inputs"] = list()
-
-        for batch in self._loaders[step]:
-            for i in range(0, batch[0].shape[0], self._params["batch_size"]):
-                batch_loss, batch_metric = self._train_block(
-                    inputs=batch[0][i: i + self._params["batch_size"]],
-                    targets=batch[1][i: i + self._params["batch_size"]],
-                    batch_idx=batch_idx,
-                    step=step
-                )
-
-                epoch_loss.append(batch_loss)
-                for key in epoch_metric.keys():
-                    epoch_metric[key].append(batch_metric)
-
-                batch_idx += 1
-
-        # Results
-        current_loss = sum(epoch_loss) / len(epoch_loss)
-        self._loss_results[step].append(current_loss)
-
-        for key in epoch_metric.keys():
-            if key not in self._metrics_results:
-                self._metrics_results[key] = {"train": list(), "valid": list()}
-            self._metrics_results[key][step].append(
-                sum(epoch_metric[key]) / len(epoch_metric[key]))
+    def _run_epoch(self, step):
+        raise NotImplementedError()
 
     def __call__(self):
         # Clean cache
         torch.cuda.empty_cache()
 
-        self._train()
+        self._launch()

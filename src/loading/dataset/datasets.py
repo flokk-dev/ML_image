@@ -10,54 +10,60 @@ Purpose:
 from .dataset import DataSet
 
 
-class DataSet2D(DataSet):
+class UnsupervisedDataSet(DataSet):
     def __init__(self, params, inputs, targets=None):
         # Mother Class
-        super(DataSet2D, self).__init__(params, inputs, targets)
+        super(UnsupervisedDataSet, self).__init__(params, inputs, targets)
 
         # Attributes
-        self._dim = 2
-
         if not self._params["lazy_loading"]:
             self._load_dataset()
 
+    def _collect_data_info(self):
+        input_tensor = self.__getitem__(0)
+        return {
+            "spatial_dims": len(input_tensor.shape) - 2,
+            "img_size": tuple(input_tensor.shape[2:]),
+            "in_channels": input_tensor.shape[1],
+            "out_channels": 1
+        }
+
     def __getitem__(self, idx):
-        # Unsupervised training
-        if self._params["training_type"] == "unsupervised":
+        # 2D data
+        if self._params["input_dim"] == 2:
             return self._get_data(self._inputs[idx])
 
-        # Supervised training
-        elif self._params["training_type"] == "supervised":
-            return self._get_data(self._inputs[idx]), self._get_data(self._targets[idx])
-
-        # Semi-supervised training
-        elif self._params["training_type"] == "semi-supervised":
-            raise NotImplementedError()
+        # 3D data
+        elif self._params["input_dim"] == 3:
+            return self._data_chopper(self._get_data(self._inputs[idx]))
 
 
-class DataSet3D(DataSet):
+class SupervisedDataSet(DataSet):
     def __init__(self, params, inputs, targets=None):
         # Mother Class
-        super(DataSet3D, self).__init__(params, inputs, targets)
+        super(SupervisedDataSet, self).__init__(params, inputs, targets)
 
         # Attributes
-        self._dim = 3
-
         if not self._params["lazy_loading"]:
             self._load_dataset()
 
-    def __getitem__(self, idx):
-        # Unsupervised training
-        if self._params["training_type"] == "unsupervised":
-            return self._data_chopper(self._get_data(self._inputs[idx]))
+    def _collect_data_info(self):
+        input_tensor, target_tensor = self.__getitem__(0)
+        return {
+            "spatial_dims": len(input_tensor.shape) - 2,
+            "img_size": tuple(input_tensor.shape[2:]),
+            "in_channels": input_tensor.shape[1],
+            "out_channels": target_tensor.shape[1]
+        }
 
-        # Supervised training
-        elif self._params["training_type"] == "supervised":
+    def __getitem__(self, idx):
+        # 2D data
+        if self._params["input_dim"] == 2:
+            return self._get_data(self._inputs[idx]), self._get_data(self._targets[idx])
+
+        # 3D data
+        elif self._params["input_dim"] == 3:
             return self._data_chopper(
                 self._get_data(self._inputs[idx]),
                 self._get_data(self._targets[idx])
             )
-
-        # Semi-supervised training
-        elif self._params["training_type"] == "semi-supervised":
-            raise NotImplementedError()

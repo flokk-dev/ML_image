@@ -8,6 +8,7 @@ Purpose:
 
 # IMPORT: data processing
 import torch
+from torch.utils.data import TensorDataset, DataLoader
 
 # IMPORT: project
 from .data_loader import DataLoader
@@ -19,12 +20,13 @@ class UnsupervisedDataLoader(DataLoader):
         # Mother Class
         super(UnsupervisedDataLoader, self).__init__(params, dataset)
 
-    @staticmethod
-    def _collate_fn(data: list) -> tuple:
+    def _collate_fn(self, data: list) -> torch.utils.data.DataLoader:
         inputs = torch.cat(data, dim=0)
 
-        idx = torch.randperm(inputs.shape[0])
-        return inputs[idx]
+        return DataLoader(
+            TensorDataset(inputs),
+            batch_size=self._params["batch_size"], shuffle=True, drop_last=True
+        )
 
 
 class SupervisedDataLoader(DataLoader):
@@ -32,8 +34,7 @@ class SupervisedDataLoader(DataLoader):
         # Mother Class
         super(SupervisedDataLoader, self).__init__(params, dataset)
 
-    @staticmethod
-    def _collate_fn(data: list) -> tuple:
+    def _collate_fn(self, data: list) -> torch.utils.data.DataLoader:
         inputs, targets = list(), list()
         for input_tensor, target_tensor in data:
             inputs.append(input_tensor)
@@ -41,5 +42,7 @@ class SupervisedDataLoader(DataLoader):
 
         inputs, targets = torch.cat(inputs, dim=0), torch.cat(targets, dim=0)
 
-        idx = torch.randperm(inputs.shape[0])
-        return inputs[idx], targets[idx]
+        return DataLoader(
+            TensorDataset(inputs, targets),
+            batch_size=self._params["batch_size"], shuffle=True, drop_last=True
+        )

@@ -6,15 +6,11 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: utils
-import sys
-
 # IMPORT: deep learning
 import torch
 
 # IMPORT: project
 import utils
-from src.training.early_stopper import EarlyStopper
 
 from model import *
 from loss import *
@@ -24,13 +20,13 @@ from metric import *
 class Learner:
     _DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def __init__(self, params, weights_path):
+    def __init__(self, params, data_info, weights_path):
         # Attributes
         self._params = params
 
         # Model
         self._model = utils.str_to_class(self._params["model"])(
-            (32, 5, 64, 64), (32, 5, 64, 64), weights_path=weights_path
+            data_info, weights_path=weights_path
         )
         self._model = torch.nn.DataParallel(self._model)
 
@@ -49,29 +45,15 @@ class Learner:
             for metric_name in self._params["metrics"]
         }
 
-    def _learn(self, inputs, targets, learn=True):
-        # Clear GPU cache
-        torch.cuda.empty_cache()
+    @property
+    def scheduler(self):
+        return self._scheduler
 
-        inputs = inputs.type(torch.float32).to(torch.device(self._DEVICE))
-        targets = targets.type(torch.float32).to(torch.device(self._DEVICE))
-
-        self._optimizer.zero_grad()
-        with torch.set_grad_enabled(learn):
-            logits = self._model(inputs)
-            loss = self._loss(logits, targets)
-
-            if learn:
-                loss.backward()
-                self._optimizer.step()
-
-        return loss.item(), self._compute_metrics(logits, targets)
+    def _learn(self, inputs, learn=True):
+        raise NotImplementedError()
 
     def _compute_metrics(self, prediction, target):
-        return {
-            self._metrics[metric_name](prediction, target).item()
-            for metric_name in self._metrics
-        }
+        raise NotImplementedError()
 
-    def __call__(self, inputs, targets, learn=True):
-        self._learn(inputs, targets, learn)
+    def __call__(self, inputs, learn=True):
+        self._learn(inputs, learn)

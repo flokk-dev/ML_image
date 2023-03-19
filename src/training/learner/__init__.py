@@ -1,1 +1,1 @@
-from .learner import Learner
+from .learners import UnsupervisedLearner, SupervisedLearner

@@ -23,11 +23,9 @@ class DataLoader(TorchDataLoader):
         )
 
         # Attributes
-        self._length = len(dataset)
+        self._params = params
+        self.data_info = dataset.data_info
 
     @staticmethod
     def _collate_fn(data: list) -> tuple:
         raise NotImplementedError()
-
-    def __len__(self):
-        return self._length
