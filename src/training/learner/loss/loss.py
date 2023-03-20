@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+import typing
+
 # IMPORT: deep learning
 import torch
 
@@ -18,9 +21,13 @@ class Loss:
         super(Loss, self).__init__()
 
         # Attributes
-        self._loss = None
+        self._loss: typing.Any = None
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> typing.Any:
         raise NotImplementedError()
 
 
@@ -32,10 +39,13 @@ class CompositeLoss:
         super(CompositeLoss, self).__init__()
 
         # Attributes
-        self._losses = None
-        self._weights = None
+        self._losses: typing.Any = None
+        self._weights: typing.Any = None
 
-    def _verify_weights(self, weights):
+    def _verify_weights(
+            self,
+            weights: dict
+    ):
         if len(weights) != len(self._losses):
             raise ValueError(
                 f"The number of weights isn't valid, "
@@ -45,5 +55,9 @@ class CompositeLoss:
         if sum(weights) != 1.0:
             raise ValueError("The sum of the weights must be equal to 1.")
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> typing.Any:
         raise NotImplementedError()

@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+import typing
+
 # IMPORT: deep learning
 import torch
 import torch.nn as nn
@@ -19,7 +22,11 @@ class Metric(nn.Module):
         super(Metric, self).__init__()
 
         # Attributes
-        self._metric = None
+        self._metric: typing.Any = None
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> typing.Any:
         raise NotImplementedError()

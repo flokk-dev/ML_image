@@ -18,9 +18,13 @@ class MAELoss(Loss):
         super(MAELoss, self).__init__()
 
         # Attributes
-        self._loss = torch.nn.L1Loss().to(self._DEVICE)
+        self._loss: torch.nn.Module = torch.nn.L1Loss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -29,9 +33,13 @@ class MSELoss(Loss):
         super(MSELoss, self).__init__()
 
         # Attributes
-        self._loss = torch.nn.MSELoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = torch.nn.MSELoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -40,9 +48,13 @@ class RMSELoss(Loss):
         super(RMSELoss, self).__init__()
 
         # Attributes
-        self._loss = torch.nn.MSELoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = torch.nn.MSELoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return torch.sqrt(self._loss(prediction, target))
 
 
@@ -51,7 +63,11 @@ class HuberLoss(Loss):
         super(HuberLoss, self).__init__()
 
         # Attributes
-        self._loss = torch.nn.HuberLoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = torch.nn.HuberLoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)

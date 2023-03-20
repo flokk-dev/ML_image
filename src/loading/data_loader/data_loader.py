@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+import typing
+
 # IMPORT: data loading
 from torch.utils.data import DataLoader as TorchDataLoader
 
@@ -14,7 +17,14 @@ from src.loading.dataset.dataset import DataSet
 
 
 class DataLoader(TorchDataLoader):
-    def __init__(self, params: dict, dataset: DataSet):
+    def __init__(
+            self,
+            params: typing.Dict[str, typing.Any],
+            dataset: DataSet
+    ):
+        """
+        pass.
+        """
         # Mother Class
         super(DataLoader, self).__init__(
             dataset,
@@ -23,9 +33,14 @@ class DataLoader(TorchDataLoader):
         )
 
         # Attributes
-        self._params = params
-        self.data_info = dataset.data_info
+        self._params: dict = params
+        self.data_info: dict = dataset.data_info
 
-    @staticmethod
-    def _collate_fn(data: list) -> tuple:
+    def _collate_fn(
+            self,
+            data: typing.List[typing.Any]
+    ) -> TorchDataLoader:
+        """
+        pass.
+        """
         raise NotImplementedError()

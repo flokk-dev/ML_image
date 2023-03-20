@@ -6,106 +6,112 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+import typing
+
 # IMPORT: deep learning
 import torch
 from monai.networks.nets import BasicUNet, AttentionUnet, UNETR, SwinUNETR
 
-# IMPORT: project
-from .model import Model
 
-
-class UNet(Model, BasicUNet):
+class UNet(BasicUNet):
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(self, input_shape, weights_path=None):
-        # Model mother class
-        Model.__init__(self, input_shape, weights_path=None)
-
-        # BasicUNet mother class
-        BasicUNet.__init__(
+    def __init__(
             self,
-            spatial_dims=self._data_info["spatial_dims"],
-            in_channels=self._data_info["in_channels"],
-            out_channels=self._data_info["out_channels"],
+            data_info: typing.Dict[str, int],
+            weights_path: str = None
+    ):
+        # Mother class
+        super(UNet, self).__init__(
+            spatial_dims=data_info["spatial_dims"],
+            in_channels=data_info["in_channels"],
+            out_channels=data_info["out_channels"],
             dropout=0.2,
         )
-
         self.to(self._DEVICE)
+
+        # Attributes
         if weights_path is not None:
             self._model.load_state_dict(torch.load(weights_path))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "UNet"
 
 
-class AttentionUNet(Model, AttentionUnet):
+class AttentionUNet(AttentionUnet):
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(self, input_shape, weights_path=None):
-        # Model mother class
-        Model.__init__(self, input_shape, weights_path=None)
-
-        # AttentionUnet mother class
-        AttentionUnet.__init__(
+    def __init__(
             self,
-            spatial_dims=self._data_info["spatial_dims"],
+            data_info: typing.Dict[str, int],
+            weights_path: str = None
+    ):
+        # Mother class
+        super(AttentionUNet, self).__init__(
+            spatial_dims=data_info["spatial_dims"],
             channels=(8, 16, 32),
-            in_channels=self._data_info["in_channels"],
-            out_channels=self._data_info["out_channels"],
+            in_channels=data_info["in_channels"],
+            out_channels=data_info["out_channels"],
             strides=(2, 2), dropout=0.2,
         )
-
         self.to(self._DEVICE)
+
+        # Attributes
         if weights_path is not None:
             self._model.load_state_dict(torch.load(weights_path))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "AttentionUNet"
 
 
-class Transformer(Model, UNETR):
+class Transformer(UNETR):
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(self, input_shape, weights_path=None):
-        # Model mother class
-        Model.__init__(self, input_shape, weights_path=None)
-
-        # UNETR mother class
-        UNETR.__init__(
+    def __init__(
             self,
-            img_size=self._data_info["img_size"],
-            spatial_dims=self._data_info["spatial_dims"],
-            in_channels=self._data_info["in_channels"],
-            out_channels=self._data_info["out_channels"],
+            data_info: typing.Dict[str, int],
+            weights_path: str = None
+    ):
+        # Mother class
+        super(Transformer, self).__init__(
+            img_size=data_info["img_size"],
+            spatial_dims=data_info["spatial_dims"],
+            in_channels=data_info["in_channels"],
+            out_channels=data_info["out_channels"],
             dropout_rate=0.2
         )
-
         self.to(self._DEVICE)
+
+        # Attributes
         if weights_path is not None:
             self._model.load_state_dict(torch.load(weights_path))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Transformer"
 
 
-class SWinTransformer(Model, SwinUNETR):
-    def __init__(self, input_shape, weights_path=None):
-        # Model mother class
-        Model.__init__(self, input_shape, weights_path=None)
+class SWinTransformer(SwinUNETR):
+    _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-        # SwinUNETR mother class
-        SwinUNETR.__init__(
+    def __init__(
             self,
-            img_size=self._data_info["img_size"],
-            spatial_dims=self._data_info["spatial_dims"],
-            in_channels=self._data_info["in_channels"],
-            out_channels=self._data_info["out_channels"],
+            data_info: typing.Dict[str, int],
+            weights_path: str = None
+    ):
+        # Mother class
+        super(SWinTransformer, self).__init__(
+            img_size=data_info["img_size"],
+            spatial_dims=data_info["spatial_dims"],
+            in_channels=data_info["in_channels"],
+            out_channels=data_info["out_channels"],
             drop_rate=0.2
         )
-
         self.to(self._DEVICE)
+
+        # Attributes
         if weights_path is not None:
             self._model.load_state_dict(torch.load(weights_path))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "SWinTransformer"

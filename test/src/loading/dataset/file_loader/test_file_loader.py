@@ -16,8 +16,8 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset.file_loader.file_loader import FileLoader
-from src.loading.dataset.file_loader import ImageLoader, NpyLoader, NpzLoader, PtLoader
+from src.loading.dataset.file_loader import FileLoader,\
+    ImageLoader, NpyLoader, NpzLoader, PtLoader
 
 
 # -------------------- CONSTANT -------------------- #
@@ -80,13 +80,13 @@ def tensor_loader():
 # -------------------- DATA LOADER -------------------- #
 
 def test_data_loader(data_loader):
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         data_loader._verify_path(DATA_PATHS["image"]["2D"])
 
     with pytest.raises(NotImplementedError):
         data_loader._load(DATA_PATHS["image"]["2D"])
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         data_loader(DATA_PATHS["image"]["2D"])
 
 

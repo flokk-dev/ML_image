@@ -8,6 +8,8 @@ Purpose:
 
 # IMPORT: utils
 import os
+import typing
+
 
 # IMPORT: loading
 import torch
@@ -16,9 +18,12 @@ import torch
 class FileLoader:
     def __init__(self):
         """ Represents a general loading method, that will be derived depending on the use case. """
-        self._file_extensions = None
+        self._file_extensions: typing.List[str] = list()
 
-    def _verify_path(self, file_path: str):
+    def _verify_path(
+            self,
+            file_path: str
+    ):
         """
         Verifies if file_path's extension is handled by the data loader.
 
@@ -31,7 +36,10 @@ class FileLoader:
         if not os.path.basename(file_path).split(".")[1] in self._file_extensions:
             raise ValueError("The file extension isn't supported.")
 
-    def _load(self, file_path: str) -> torch.Tensor:
+    def _load(
+            self,
+            file_path: str
+    ) -> torch.Tensor:
         """
         Loads a file into a Tensor.
 
@@ -46,7 +54,10 @@ class FileLoader:
         """
         raise NotImplementedError("Abstract method.")
 
-    def __call__(self, file_path: str) -> torch.Tensor:
+    def __call__(
+            self,
+            file_path: str
+    ) -> torch.Tensor:
         """
         Verifies and loads a file into a Tensor.
 

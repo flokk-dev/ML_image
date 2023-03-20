@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+import typing
+
 # IMPORT: deep learning
 import torch
 import monai
@@ -19,9 +22,13 @@ class CELoss(Loss):
         super(CELoss, self).__init__()
 
         # Attributes
-        self._loss = torch.nn.CrossEntropyLoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = torch.nn.CrossEntropyLoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -30,9 +37,13 @@ class BCELoss(Loss):
         super(BCELoss, self).__init__()
 
         # Attributes
-        self._loss = torch.nn.BCELoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = torch.nn.BCELoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -41,9 +52,13 @@ class DiceLoss(Loss):
         super(DiceLoss, self).__init__()
 
         # Attributes
-        self._loss = monai.losses.DiceLoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = monai.losses.DiceLoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -52,9 +67,13 @@ class DiceCELoss(Loss):
         super(DiceCELoss, self).__init__()
 
         # Attributes
-        self._loss = monai.losses.DiceCELoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = monai.losses.DiceCELoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -63,9 +82,13 @@ class DiceFocalLoss(Loss):
         super(DiceFocalLoss, self).__init__()
 
         # Attributes
-        self._loss = monai.losses.DiceFocalLoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = monai.losses.DiceFocalLoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -74,9 +97,13 @@ class FocalLoss(Loss):
         super(FocalLoss, self).__init__()
 
         # Attributes
-        self._loss = monai.losses.FocalLoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = monai.losses.FocalLoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -85,9 +112,13 @@ class FocalTverskyLoss(Loss):
         super(FocalTverskyLoss, self).__init__()
 
         # Attributes
-        self._loss = monai.losses.TverskyLoss().to(self._DEVICE)
+        self._loss: torch.nn.Module = monai.losses.TverskyLoss().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -96,14 +127,18 @@ class UnifiedFocalLoss(CompositeLoss):
         super(UnifiedFocalLoss, self).__init__()
 
         # Attributes
-        self._losses = [
+        self._losses: typing.List[typing.Dict[str, typing.Any]] = [
             {"loss": monai.losses.FocalLoss().to(self._DEVICE), "weight": weights[0]},
             {"loss": monai.losses.TverskyLoss().to(self._DEVICE), "weight": weights[0]},
         ]
         self._verify_weights(weights)
 
-    def __call__(self, prediction, target):
-        loss_value = 0
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
+        loss_value: float = 0.0
         for loss, weight in self._losses:
             loss_value += loss(prediction, target) * weight
 

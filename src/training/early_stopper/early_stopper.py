@@ -6,19 +6,30 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+import typing
+
 
 class EarlyStopper:
-    def __init__(self, params):
+    def __init__(
+            self,
+            params: typing.Dict[str, typing.Any]
+    ):
         # Attributes
-        self._max_duration = params["duration"]
-        self._current_best = {
+        self._max_duration: int = params["duration"]
+        self._current_best: typing.Dict[str, typing.Any] = {
             "loss_value": float("inf"),
             "epoch": 0,
             "duration": 0,
             "weights": dict(),
         }
 
-    def check_epoch(self, epoch_idx, loss_value, model):
+    def check_epoch(
+            self,
+            epoch_idx: int,
+            loss_value: int,
+            model: typing.Any
+    ):
         if loss_value < self._current_best["loss_value"]:
             self._current_best["loss"] = loss_value
             self._current_best["epoch"] = epoch_idx

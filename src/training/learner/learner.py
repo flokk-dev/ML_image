@@ -12,9 +12,9 @@ import torch
 # IMPORT: project
 import utils
 
-from model import *
-from loss import *
-from metric import *
+from .model import *
+from .loss import *
+from .metric import *
 
 
 class Learner:

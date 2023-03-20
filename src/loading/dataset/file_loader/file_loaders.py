@@ -7,11 +7,10 @@ Purpose:
 """
 
 # IMPORT: loading
-import cv2
-
 import numpy as np
 import torch
 import zstd
+import cv2
 
 # IMPORT: projet
 from .file_loader import FileLoader
@@ -24,9 +23,12 @@ class ImageLoader(FileLoader):
         super(ImageLoader, self).__init__()
 
         # Attributes
-        self._file_extensions: list = ["png", "jpg", "jpeg"]
+        self._file_extensions.extend(["png", "jpg", "jpeg"])
 
-    def _load(self, file_path: str) -> torch.Tensor:
+    def _load(
+            self,
+            file_path: str
+    ) -> torch.Tensor:
         """
         Loads an image into a Tensor.
 
@@ -47,9 +49,12 @@ class NpyLoader(FileLoader):
         super(NpyLoader, self).__init__()
 
         # Attributes
-        self._file_extensions: list = ["npy"]
+        self._file_extensions.extend(["npy"])
 
-    def _load(self, file_path: str) -> torch.Tensor:
+    def _load(
+            self,
+            file_path: str
+    ) -> torch.Tensor:
         """
         Loads a npy file's content into a Tensor.
 
@@ -72,7 +77,10 @@ class NpzLoader(FileLoader):
         # Attributes
         self._file_extensions: list = ["npz"]
 
-    def _load(self, file_path: str) -> torch.Tensor:
+    def _load(
+            self,
+            file_path: str
+    ) -> torch.Tensor:
         """
         Loads a npz file's content into a Tensor.
 
@@ -101,7 +109,10 @@ class PtLoader(FileLoader):
         # Attributes
         self._file_extensions: list = ["pt"]
 
-    def _load(self, file_path: str) -> torch.Tensor:
+    def _load(
+            self,
+            file_path: str
+    ) -> torch.Tensor:
         """
         Loads a pt file's content into a Tensor.
 

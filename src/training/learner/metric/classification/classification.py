@@ -19,9 +19,13 @@ class Accuracy(Metric):
         super(Accuracy, self).__init__()
 
         # Attributes
-        self._metric = torchmetrics.Accuracy().to(self._DEVICE)
+        self._metric: torch.nn.Module = torchmetrics.Accuracy().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
         return self._loss(prediction, target)
 
 
@@ -30,10 +34,14 @@ class JaccardIndex(Metric):
         super(JaccardIndex, self).__init__()
 
         # Attributes
-        self._loss = torchmetrics.JaccardIndex(num_classes=2).to(self._DEVICE)
+        self._metric: torch.nn.Module = torchmetrics.JaccardIndex(num_classes=2).to(self._DEVICE)
 
-    def __call__(self, prediction, target):
-        return self._loss(prediction, target)
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
+        return self._metric(prediction, target)
 
 
 class Precision(Metric):
@@ -41,10 +49,14 @@ class Precision(Metric):
         super(Precision, self).__init__()
 
         # Attributes
-        self._loss = torchmetrics.Precision().to(self._DEVICE)
+        self._metric: torch.nn.Module = torchmetrics.Precision().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
-        return torch.sqrt(self._loss(prediction, target))
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
+        return torch.sqrt(self._metric(prediction, target))
 
 
 class Recall(Metric):
@@ -52,10 +64,14 @@ class Recall(Metric):
         super(Recall, self).__init__()
 
         # Attributes
-        self._loss = torchmetrics.Recall().to(self._DEVICE)
+        self._metric: torch.nn.Module = torchmetrics.Recall().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
-        return self._loss(prediction, target)
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
+        return self._metric(prediction, target)
 
 
 class F1Score(Metric):
@@ -63,7 +79,11 @@ class F1Score(Metric):
         super(F1Score, self).__init__()
 
         # Attributes
-        self._loss = torchmetrics.F1Score().to(self._DEVICE)
+        self._metric: torch.nn.Module = torchmetrics.F1Score().to(self._DEVICE)
 
-    def __call__(self, prediction, target):
-        return self._loss(prediction, target)
+    def __call__(
+            self,
+            prediction: torch.Tensor,
+            target: torch.Tensor
+    ) -> torch.Tensor:
+        return self._metric(prediction, target)

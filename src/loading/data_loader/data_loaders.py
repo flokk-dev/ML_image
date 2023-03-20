@@ -6,9 +6,12 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+import typing
+
 # IMPORT: data processing
 import torch
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import TensorDataset, DataLoader as TorchDataLoader
 
 # IMPORT: project
 from .data_loader import DataLoader
@@ -16,33 +19,57 @@ from src.loading.dataset.dataset import DataSet
 
 
 class UnsupervisedDataLoader(DataLoader):
-    def __init__(self, params: dict, dataset: DataSet):
+    def __init__(
+            self,
+            params: typing.Dict[str, typing.Any],
+            dataset: DataSet
+    ):
+        """
+        pass.
+        """
         # Mother Class
         super(UnsupervisedDataLoader, self).__init__(params, dataset)
 
-    def _collate_fn(self, data: list) -> torch.utils.data.DataLoader:
-        inputs = torch.cat(data, dim=0)
+    def _collate_fn(
+            self,
+            data: typing.List[torch.Tensor]
+    ) -> TorchDataLoader:
+        """
+        pass.
+        """
+        inputs: torch.Tensor = torch.cat(data, dim=0)
 
-        return DataLoader(
+        return TorchDataLoader(
             TensorDataset(inputs),
             batch_size=self._params["batch_size"], shuffle=True, drop_last=True
         )
 
 
 class SupervisedDataLoader(DataLoader):
-    def __init__(self, params: dict, dataset: DataSet):
+    def __init__(
+            self,
+            params: typing.Dict[str, typing.Any],
+            dataset: DataSet
+    ):
+        """
+        pass.
+        """
         # Mother Class
         super(SupervisedDataLoader, self).__init__(params, dataset)
 
-    def _collate_fn(self, data: list) -> torch.utils.data.DataLoader:
-        inputs, targets = list(), list()
-        for input_tensor, target_tensor in data:
-            inputs.append(input_tensor)
-            targets.append(target_tensor)
+    def _collate_fn(
+            self,
+            data: typing.List[typing.Tuple[torch.Tensor, torch.Tensor]]
+    ) -> TorchDataLoader:
+        """
+        pass.
+        """
+        tensors: tuple = tuple(zip(*[(input_t, target_t) for input_t, target_t in data]))
 
-        inputs, targets = torch.cat(inputs, dim=0), torch.cat(targets, dim=0)
+        input_t: torch.Tensor = torch.cat(tensors[0], dim=0)
+        target_t: torch.Tensor = torch.cat(tensors[1], dim=0)
 
-        return DataLoader(
-            TensorDataset(inputs, targets),
+        return TorchDataLoader(
+            TensorDataset(input_t, target_t),
             batch_size=self._params["batch_size"], shuffle=True, drop_last=True
         )

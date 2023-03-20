@@ -16,8 +16,8 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset.dataset import DataSet
-from src.loading.dataset import DataSet2D, DataSet3D
+from src.loading.dataset import DataSet, \
+    UnsupervisedDataSet, SupervisedDataSet
 
 from src.loading.dataset.file_loader import PtLoader
 
@@ -41,47 +41,23 @@ DATA_PATHS = {
 def dataset():
     return DataSet(
         params={
-            "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
+            "file_type": "tensor", "lazy_loading": True,
             "input_dim": 2, "output_dim": 2
         },
-        inputs=[DATA_PATHS["tensor"]["2D"] for i in range(10)],
-        targets=[DATA_PATHS["tensor"]["2D"] for i in range(10)]
-    )
-
-
-@pytest.fixture(scope="function")
-def dataset_2d():
-    return DataSet2D(
-        params={
-            "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
-            "input_dim": 2, "output_dim": 2
-        },
-        inputs=[DATA_PATHS["tensor"]["2D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["3D"]],
-        targets=[DATA_PATHS["tensor"]["2D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["3D"]]
-    )
-
-
-@pytest.fixture(scope="function")
-def dataset_3d():
-    return DataSet3D(
-        params={
-            "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
-            "input_dim": 3, "output_dim": 2
-        },
-        inputs=[DATA_PATHS["tensor"]["3D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["2D"]],
-        targets=[DATA_PATHS["tensor"]["3D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["2D"]]
+        input_paths=[DATA_PATHS["tensor"]["2D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["3D"]],
+        target_paths=[DATA_PATHS["tensor"]["2D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["3D"]]
     )
 
 
 def dataset_to_modify(training_type, file_type, lazy_loading, input_dim, output_dim):
-    datasets = {2: DataSet2D, 3: DataSet3D}
-    return datasets[input_dim](
+    datasets = {"unsupervised": UnsupervisedDataSet, "supervised": SupervisedDataSet}
+    return datasets[training_type](
         params={
-            "training_type": training_type, "file_type": file_type, "lazy_loading": lazy_loading,
+            "file_type": file_type, "lazy_loading": lazy_loading,
             "input_dim": input_dim, "output_dim": output_dim
         },
-        inputs=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)],
-        targets=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)]
+        input_paths=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)],
+        target_paths=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)]
     )
 
 
@@ -89,122 +65,134 @@ def dataset_to_modify(training_type, file_type, lazy_loading, input_dim, output_
 
 def test_dataset(dataset):
     with pytest.raises(NotImplementedError):
+        input_tensor, target_tensor = dataset._collect_data_info()
+
+    with pytest.raises(NotImplementedError):
         input_tensor, target_tensor = dataset.__getitem__(0)
 
     with pytest.raises(NotImplementedError):
         input_tensor, target_tensor = dataset[0]
 
+    # Not a .pt file
+    with pytest.raises(ValueError):
+        tensor = dataset._get_data(dataset._inputs[1])
 
-# -------------------- DATASET 2D -------------------- #
 
-def test_dataset_verify_shape_2d_wrong(dataset_2d):
+def test_dataset_verify_shape_wrong(dataset):
     # 2D -> shape == 1
     tensor = torch.Tensor(32)
     with pytest.raises(ValueError):
-        dataset_2d._verify_shape(tensor)
+        dataset._verify_shape(tensor)
 
     # 2D -> shape == 5
     tensor = torch.Tensor(1, 1, 32, 32, 32)
     with pytest.raises(ValueError):
-        dataset_2d._verify_shape(tensor)
+        dataset._verify_shape(tensor)
 
     # 2D -> shape with + 2 > 5
     tensor = torch.Tensor(20, 32, 32)
     with pytest.raises(ValueError):
-        dataset_2d._verify_shape(tensor)
+        dataset._verify_shape(tensor)
 
     # 2D -> shape with + 2 > 5
     tensor = torch.Tensor(32, 32, 20)
     with pytest.raises(ValueError):
-        dataset_2d._verify_shape(tensor)
+        dataset._verify_shape(tensor)
 
     # 2D -> shape with + 2 > 5
     tensor = torch.Tensor(1, 20, 32, 32)
     with pytest.raises(ValueError):
-        dataset_2d._verify_shape(tensor)
+        dataset._verify_shape(tensor)
 
     # 2D -> shape with + 2 > 1
     tensor = torch.Tensor(3, 3, 32, 32)
     with pytest.raises(ValueError):
-        dataset_2d._verify_shape(tensor)
+        dataset._verify_shape(tensor)
 
     # 3D instead of 2D
     tensor = PtLoader()(DATA_PATHS["tensor"]["3D"])
     with pytest.raises(ValueError):
-        dataset_2d._verify_shape(tensor)
+        dataset._verify_shape(tensor)
 
 
-def test_dataset_verify_shape_2d_wright(dataset_2d):
+def test_dataset_verify_shape_wright(dataset):
     # 2D -> shape == 2
     tensor = torch.Tensor(32, 32)
-    assert dataset_2d._verify_shape(tensor)
+    dataset._verify_shape(tensor)
 
     # 2D -> shape == 3
     tensor = torch.Tensor(1, 32, 32)
-    assert dataset_2d._verify_shape(tensor)
+    dataset._verify_shape(tensor)
 
     # 2D -> shape == 3
     tensor = torch.Tensor(32, 32, 3)
-    assert dataset_2d._verify_shape(tensor)
+    dataset._verify_shape(tensor)
 
     # 2D -> shape == 3
     tensor = torch.Tensor(3, 32, 32)
-    assert dataset_2d._verify_shape(tensor)
+    dataset._verify_shape(tensor)
 
     # 2D -> shape == 4
     tensor = torch.Tensor(1, 3, 32, 32)
-    assert dataset_2d._verify_shape(tensor)
+    dataset._verify_shape(tensor)
 
     # 2D -> shape == 4
     tensor = torch.Tensor(1, 32, 32, 3)
-    assert dataset_2d._verify_shape(tensor)
+    dataset._verify_shape(tensor)
 
 
-def test_dataset_adjust_shape_2d(dataset_2d):
+def test_dataset_adjust_shape(dataset):
     # 2D -> shape == 2
     tensor = torch.Tensor(32, 32)
-    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32))
+    assert dataset._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32))
 
     # 2D -> shape == 3
     tensor = torch.Tensor(1, 32, 32)
-    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32))
+    assert dataset._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32))
 
     # 2D -> shape == 3
     tensor = torch.Tensor(32, 32, 3)
-    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
+    assert dataset._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
 
     # 2D -> shape == 3
     tensor = torch.Tensor(3, 32, 32)
-    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
+    assert dataset._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
 
     # 2D -> shape == 4
     tensor = torch.Tensor(1, 3, 32, 32)
-    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
+    assert dataset._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
 
     # 2D -> shape == 4
     tensor = torch.Tensor(1, 32, 32, 3)
-    assert dataset_2d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
+    assert dataset._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32))
 
 
-def test_dataset_get_data_2d(dataset_2d):
+def test_dataset_get_data(dataset):
     # 2D tensor
-    input_tensor = dataset_2d._get_data(dataset_2d._inputs[0])
+    input_tensor = dataset._get_data(dataset._inputs[0])
 
     assert isinstance(input_tensor, torch.Tensor)
     assert input_tensor.shape == torch.Size((1, 1, 32, 32))
 
     # Not a .pt file
     with pytest.raises(ValueError):
-        tensor = dataset_2d._get_data(dataset_2d._inputs[1])
+        tensor = dataset._get_data(dataset._inputs[1])
 
     # 3D instead of 2D
     with pytest.raises(ValueError):
-        tensor = dataset_2d._get_data(dataset_2d._inputs[2])
+        tensor = dataset._get_data(dataset._inputs[2])
 
 
-def test_dataset_getitem_2d(dataset_2d):
+# -------------------- DATASET 2D -------------------- #
+
+def test_dataset_getitem_2d():
+    dataset = dataset_to_modify(
+        training_type="supervised", file_type="tensor", lazy_loading=True,
+        input_dim=2, output_dim=2
+    )
+
     # 2D tensor
-    input_tensor, target_tensor = dataset_2d[0]
+    input_tensor, target_tensor = dataset[0]
 
     assert isinstance(input_tensor, torch.Tensor)
     assert input_tensor.shape == torch.Size((1, 1, 32, 32))
@@ -214,121 +202,6 @@ def test_dataset_getitem_2d(dataset_2d):
 
 
 # -------------------- DATASET 3D -------------------- #
-
-def test_dataset_verify_shape_3d_wrong(dataset_3d):
-    # 2D -> shape == 1
-    tensor = torch.Tensor(32)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 2
-    tensor = torch.Tensor(32, 32)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 5
-    tensor = torch.Tensor(3, 3, 32, 32, 32)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 6
-    tensor = torch.Tensor(1, 1, 32, 32, 32, 32)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape with + 3 > 5
-    tensor = torch.Tensor(20, 32, 32, 32)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape with + 3 > 5
-    tensor = torch.Tensor(32, 32, 32, 20)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape with + 3 > 5
-    tensor = torch.Tensor(1, 20, 32, 32, 32)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape with + 3 > 1
-    tensor = torch.Tensor(3, 3, 3, 32, 32)
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-    # 2D instead of 3D
-    tensor = PtLoader()(DATA_PATHS["tensor"]["2D"])
-    with pytest.raises(ValueError):
-        dataset_3d._verify_shape(tensor)
-
-
-def test_dataset_verify_shape_3d_wright(dataset_3d):
-    # 2D -> shape == 3
-    tensor = torch.Tensor(1, 32, 32, 32)
-    dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 4
-    tensor = torch.Tensor(1, 1, 32, 32, 32)
-    dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 4
-    tensor = torch.Tensor(32, 32, 32, 3)
-    dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 4
-    tensor = torch.Tensor(3, 32, 32, 32)
-    dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 5
-    tensor = torch.Tensor(1, 3, 32, 32, 32)
-    dataset_3d._verify_shape(tensor)
-
-    # 2D -> shape == 5
-    tensor = torch.Tensor(1, 32, 32, 32, 3)
-    dataset_3d._verify_shape(tensor)
-
-
-def test_dataset_adjust_shape_3d(dataset_3d):
-    # 2D -> shape == 3
-    tensor = torch.Tensor(32, 32, 32)
-    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32, 32))
-
-    # 2D -> shape == 4
-    tensor = torch.Tensor(1, 32, 32, 32)
-    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 1, 32, 32, 32))
-
-    # 2D -> shape == 4
-    tensor = torch.Tensor(32, 32, 32, 3)
-    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
-
-    # 2D -> shape == 4
-    tensor = torch.Tensor(3, 32, 32, 32)
-    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
-
-    # 2D -> shape == 5
-    tensor = torch.Tensor(1, 3, 32, 32, 32)
-    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
-
-    # 2D -> shape == 5
-    tensor = torch.Tensor(1, 32, 32, 32, 3)
-    assert dataset_3d._adjust_shape(tensor).shape == torch.Size((1, 3, 32, 32, 32))
-
-
-def test_dataset_get_data_3d(dataset_3d):
-    # 3D tensor
-    input_tensor = dataset_3d._get_data(dataset_3d._inputs[0])
-
-    assert isinstance(input_tensor, torch.Tensor)
-    assert input_tensor.shape == torch.Size((1, 1, 32, 32, 32))
-
-    # Not a .pt file
-    with pytest.raises(ValueError):
-        tensor = dataset_3d._get_data(dataset_3d._inputs[1])
-
-    # 2D instead of 3D
-    with pytest.raises(ValueError):
-        tensor = dataset_3d._get_data(dataset_3d._inputs[2])
-
 
 def test_dataset_getitem_3d_2d():
     dataset = dataset_to_modify(

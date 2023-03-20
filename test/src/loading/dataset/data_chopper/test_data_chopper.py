@@ -16,10 +16,10 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset import DataSet3D
+from src.loading.dataset import SupervisedDataSet
 
-from src.loading.dataset.data_chopper.data_chopper import DataChopper
-from src.loading.dataset.data_chopper import DataChopper2D, DataChopper25D, DataChopper3D
+from src.loading.dataset.data_chopper import DataChopper, \
+    DataChopper2D, DataChopper25D, DataChopper3D
 
 
 # -------------------- CONSTANT -------------------- #
@@ -35,13 +35,14 @@ DATA_PATHS = {
 # -------------------- FIXTURES -------------------- #
 
 @pytest.fixture(scope="function")
-def input_target_tensor():
-    dataset = DataSet3D(
+def input_target_tensors():
+    dataset = SupervisedDataSet(
         params={
             "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
             "input_dim": 3, "output_dim": 2
         },
-        inputs=[DATA_PATHS["tensor"]["3D"]], targets=[DATA_PATHS["tensor"]["3D"]]
+        input_paths=[DATA_PATHS["tensor"]["3D"]],
+        target_paths=[DATA_PATHS["tensor"]["3D"]]
     )
     return dataset._get_data(dataset._inputs[0]), dataset._get_data(dataset._targets[0])
 
@@ -69,8 +70,8 @@ def data_chopper_3d():
 # -------------------- DATA CHOPPER -------------------- #
 
 
-def test_data_chopper(data_chopper, input_target_tensor):
-    input_tensor, target_tensor = input_target_tensor
+def test_data_chopper(data_chopper, input_target_tensors):
+    input_tensor, target_tensor = input_target_tensors
 
     with pytest.raises(NotImplementedError):
         data_chopper(input_tensor, target_tensor)
@@ -79,41 +80,41 @@ def test_data_chopper(data_chopper, input_target_tensor):
 # -------------------- DATA CHOPPER 2D -------------------- #
 
 
-def test_data_chopper_2d_chop(data_chopper_2d, input_target_tensor):
+def test_data_chopper_2d_chop(data_chopper_2d, input_target_tensors):
     # input and target
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor, target_tensor = data_chopper_2d._chop(input_tensor, target_tensor)
 
     assert input_tensor.shape == torch.Size((32, 1, 32, 32))
     assert target_tensor.shape == torch.Size((32, 1, 32, 32))
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     with pytest.raises(ValueError):
         input_tensor, target_tensor = data_chopper_2d._chop(input_tensor)
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor = data_chopper_2d._chop(input_tensor)
 
     assert input_tensor.shape == torch.Size((32, 1, 32, 32))
 
 
-def test_data_chopper_2d(data_chopper_2d, input_target_tensor):
+def test_data_chopper_2d(data_chopper_2d, input_target_tensors):
     # input and target
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor, target_tensor = data_chopper_2d(input_tensor, target_tensor)
 
     assert input_tensor.shape == torch.Size((32, 1, 32, 32))
     assert target_tensor.shape == torch.Size((32, 1, 32, 32))
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     with pytest.raises(ValueError):
         input_tensor, target_tensor = data_chopper_2d(input_tensor)
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor = data_chopper_2d(input_tensor)
 
     assert input_tensor.shape == torch.Size((32, 1, 32, 32))
@@ -121,9 +122,9 @@ def test_data_chopper_2d(data_chopper_2d, input_target_tensor):
 
 # -------------------- DATA CHOPPER 2D -------------------- #
 
-def test_data_chopper_25d_chop(data_chopper_25d, input_target_tensor):
+def test_data_chopper_25d_chop(data_chopper_25d, input_target_tensors):
     # input and target
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor, target_tensor = data_chopper_25d._chop(input_tensor, target_tensor)
 
     assert isinstance(input_tensor, torch.Tensor)
@@ -133,21 +134,21 @@ def test_data_chopper_25d_chop(data_chopper_25d, input_target_tensor):
     assert target_tensor.shape == torch.Size((28, 1, 32, 32))
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     with pytest.raises(ValueError):
         input_tensor, target_tensor = data_chopper_25d._chop(input_tensor)
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor = data_chopper_25d._chop(input_tensor)
 
     assert isinstance(input_tensor, torch.Tensor)
     assert input_tensor.shape == torch.Size((28, 5, 32, 32))
 
 
-def test_data_chopper_25d(data_chopper_25d, input_target_tensor):
+def test_data_chopper_25d(data_chopper_25d, input_target_tensors):
     # input and target
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor, target_tensor = data_chopper_25d(input_tensor, target_tensor)
 
     assert isinstance(input_tensor, torch.Tensor)
@@ -157,12 +158,12 @@ def test_data_chopper_25d(data_chopper_25d, input_target_tensor):
     assert target_tensor.shape == torch.Size((28, 1, 32, 32))
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     with pytest.raises(ValueError):
         input_tensor, target_tensor = data_chopper_25d(input_tensor)
 
     # input
-    input_tensor, target_tensor = input_target_tensor
+    input_tensor, target_tensor = input_target_tensors
     input_tensor = data_chopper_25d(input_tensor)
 
     assert isinstance(input_tensor, torch.Tensor)
@@ -171,9 +172,9 @@ def test_data_chopper_25d(data_chopper_25d, input_target_tensor):
 # -------------------- DATASET 3D -------------------- #
 
 
-def test_data_chopper_3d_chop(data_chopper_3d, input_target_tensor):
+def test_data_chopper_3d_chop(data_chopper_3d, input_target_tensors):
     pass
 
 
-def test_data_chopper_3d(data_chopper_3d, input_target_tensor):
+def test_data_chopper_3d(data_chopper_3d, input_target_tensors):
     pass
