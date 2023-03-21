@@ -18,9 +18,9 @@ from src.loading.dataset.dataset import DataSet
 
 class DataLoader(TorchDataLoader):
     def __init__(
-            self,
-            params: typing.Dict[str, typing.Any],
-            dataset: DataSet
+        self,
+        params: typing.Dict[str, typing.Any],
+        dataset: DataSet
     ):
         """
         pass.
@@ -37,8 +37,8 @@ class DataLoader(TorchDataLoader):
         self.data_info: dict = dataset.data_info
 
     def _collate_fn(
-            self,
-            data: typing.List[typing.Any]
+        self,
+        data: typing.List[typing.Any]
     ) -> TorchDataLoader:
         """
         pass.

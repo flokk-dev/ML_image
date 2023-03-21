@@ -126,11 +126,20 @@ class DataSet(Dataset):
 
         return tensor.unsqueeze(0)
 
-    def _collect_data_info(self) -> typing.Any:
+    def _collect_data_info(
+            self,
+            tensor: torch.Tensor
+    ) -> typing.Dict[str, int]:
         """
         pass.
         """
-        raise NotImplementedError()
+        print(tensor.shape)
+        return {
+            "spatial_dims": len(tensor.shape) - 2,
+            "img_size": tuple(tensor.shape[2:]),
+            "in_channels": tensor.shape[1],
+            "out_channels": self._params["out_channels"]
+        }
 
     def __getitem__(
             self,

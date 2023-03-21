@@ -7,19 +7,17 @@ Purpose:
 """
 
 # IMPORT: utils
+import typing
+
 import time
 from tqdm import tqdm
 
 # IMPORT: deep learning
 import torch
 
-# IMPORT: project
-from .early_stopper import EarlyStopper
-from .dashboard import Dashboard2D, Dashboard25D, Dashboard3D
-
 
 class Trainer:
-    _DASHBOARDS = {2: Dashboard2D, 2.5: Dashboard25D, 3: Dashboard3D}
+    _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
     def __init__(self, params):
         # Attributes
@@ -30,10 +28,7 @@ class Trainer:
         self._data_loaders = None
         self._learner = None
 
-        self._early_stopper = EarlyStopper(self._params)
-        self._dashboard = self._DASHBOARDS[self._params["input_dim"]](
-            self._params, self._name
-        )
+        self._components = None
 
     def _launch(self):
         print("\nLancement de l'entrainement.")
@@ -48,18 +43,42 @@ class Trainer:
             self._run_epoch(step="valid")
 
             # Update the epoch
-            self._dashboard.upload_values(self._learner.scheduler.get_last_lr()[0])
-            self._learner.scheduler.step()
+            self._components.dashboard.upload_values(self._learner.scheduler.get_last_lr()[0])
+            self._components.scheduler.step()
 
         # End the training
         time.sleep(30)
-        self._dashboard.shutdown()
+        self._components.dashboard.shutdown()
 
     def _run_epoch(self, step):
+        epoch_loss = list()
+        epoch_metrics = {metric_name: list() for metric_name in self._params["metrics"]}
+
+        batch_idx = 0
+        learning_allowed = step == "train"
+
+        for sub_data_loader in self._data_loaders[step]:
+            for batch in sub_data_loader:
+                batch_loss, batch_metrics = self._learner(batch, learn=learning_allowed)
+
+                epoch_loss.append(batch_loss)
+                for metric_name in epoch_metrics.keys():
+                    epoch_metrics[metric_name].append(batch_metrics[metric_name])
+
+                batch_idx += 1
+
+        # Store the results
+        self._components.dashboard.update_loss_metrics(epoch_loss, epoch_metrics)
+
+    def _learn_on_batch(self, inputs, learn=True):
+        raise NotImplementedError()
+
+    def _compute_metrics(self, prediction):
         raise NotImplementedError()
 
     def __call__(self):
         # Clean cache
         torch.cuda.empty_cache()
 
+        # Launch training
         self._launch()

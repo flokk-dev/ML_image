@@ -28,23 +28,11 @@ class UnsupervisedDataSet(DataSet):
         """
         # Mother Class
         super(UnsupervisedDataSet, self).__init__(params, input_paths, target_paths)
-        self.data_info: typing.Dict[str, int] = self._collect_data_info()
+        self.data_info: typing.Dict[str, int] = self._collect_data_info(self.__getitem__(0))
 
         # Attributes
         if not self._params["lazy_loading"]:
             self._load_dataset()
-
-    def _collect_data_info(self) -> typing.Dict[str, int]:
-        """
-        pass.
-        """
-        input_t: torch.Tensor = self.__getitem__(0)
-        return {
-            "spatial_dims": len(input_t.shape) - 2,
-            "img_size": tuple(input_t.shape[2:]),
-            "in_channels": input_t.shape[1],
-            "out_channels": 1
-        }
 
     def __getitem__(
             self,
@@ -79,21 +67,6 @@ class SupervisedDataSet(DataSet):
         # Attributes
         if not self._params["lazy_loading"]:
             self._load_dataset()
-
-    def _collect_data_info(self) -> typing.Dict[str, int]:
-        """
-        pass.
-        """
-        input_t: torch.Tensor
-        target_t: torch.Tensor
-
-        input_t, target_t = self.__getitem__(0)
-        return {
-            "spatial_dims": len(input_t.shape) - 2,
-            "img_size": tuple(input_t.shape[2:]),
-            "in_channels": input_t.shape[1],
-            "out_channels": target_t.shape[1]
-        }
 
     def __getitem__(
             self,
