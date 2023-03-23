@@ -1,48 +1,35 @@
 """
-Creator: HOCQUET Florian, Landza HOUDI
-Date: 30/09/2022
+Creator: Flokk
+Date: 01/03/2023
 Version: 1.0
 
-Purpose: Manages the project's constants paths.
+Purpose:
 """
 
-# IMPORT: utils
+# IMPORT: toolbox_ml
 import os
 
 """
 ROOT
 """
-ROOT_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "picchb2022_estimation_bruit")
+ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 
 """
 RESOURCES
 """
 RESOURCES_PATH = os.path.join(ROOT_PATH, "resources")
-
-"""
-DATASET INFO
-"""
-DATASETS_INFO_PATH = os.path.join(RESOURCES_PATH, "bdd_description")
-
-TRAIN_INFO_PATH = os.path.join(DATASETS_INFO_PATH, "bdd_train_description.csv")
-INFERENCE_INFO_PATH = os.path.join(DATASETS_INFO_PATH, "bdd_inference_description.csv")
-
-"""
-TRAIN SAVE
-"""
-MODEL_SAVE_PATH = os.path.join(RESOURCES_PATH, "models")
-TRAIN_RES_PATH = os.path.join(RESOURCES_PATH, "models", "training_results.csv")
-
-"""
-INFERENCE SAVE
-"""
-INFERENCE_SAVE_PATH = os.path.join(RESOURCES_PATH, "inference")
-INFERENCE_RES_PATH = os.path.join(RESOURCES_PATH, "inference", "inference_results.csv")
+CONFIG_PATH = os.path.join(RESOURCES_PATH, "config.json")
 
 """
 TEST
 """
-TEST_PATH = os.path.join(ROOT_PATH, "tests")
-TEST_RESOURCE_PATH = os.path.join(TEST_PATH, "resources")
+TEST_PATH = os.path.join(ROOT_PATH, "test")
+TEST_DATA_PATH = os.path.join(TEST_PATH, "data")
 
-MODEL_TEST_SAVE_PATH = os.path.join(TEST_RESOURCE_PATH, "models")
+"""
+MODELS
+"""
+MODELS_PATH = os.path.join(RESOURCES_PATH, "models")
+
+TRAIN_PATH = os.path.join(MODELS_PATH, "training_results.csv")
+INFERENCE_PATH = os.path.join(MODELS_PATH, "inference_results.csv")
