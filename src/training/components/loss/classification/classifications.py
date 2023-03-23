@@ -30,6 +30,7 @@ class CELoss(ClassificationLoss):
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.CrossEntropyLoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class BCELoss(ClassificationLoss):
@@ -48,6 +49,7 @@ class BCELoss(ClassificationLoss):
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.BCELoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class DiceLoss(ClassificationLoss):
@@ -66,6 +68,7 @@ class DiceLoss(ClassificationLoss):
 
         # Attributes
         self._loss: torch.nn.Module = monai.losses.DiceLoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class DiceCELoss(ClassificationLoss):
@@ -84,6 +87,7 @@ class DiceCELoss(ClassificationLoss):
 
         # Attributes
         self._loss: torch.nn.Module = monai.losses.DiceCELoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class DiceFocalLoss(ClassificationLoss):
@@ -102,6 +106,7 @@ class DiceFocalLoss(ClassificationLoss):
 
         # Attributes
         self._loss: torch.nn.Module = monai.losses.DiceFocalLoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class FocalLoss(ClassificationLoss):
@@ -120,6 +125,7 @@ class FocalLoss(ClassificationLoss):
 
         # Attributes
         self._loss: torch.nn.Module = monai.losses.FocalLoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class FocalTverskyLoss(ClassificationLoss):
@@ -138,3 +144,4 @@ class FocalTverskyLoss(ClassificationLoss):
 
         # Attributes
         self._loss: torch.nn.Module = monai.losses.TverskyLoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"

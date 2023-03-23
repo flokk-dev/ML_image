@@ -28,9 +28,6 @@ class RegressionLoss(Loss):
         # Mother class
         super(RegressionLoss, self).__init__()
 
-        # Attributes
-        self._loss: torch.nn.Module = None
-
     def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
             -> torch.Tensor:
         """

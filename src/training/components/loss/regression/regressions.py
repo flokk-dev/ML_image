@@ -29,6 +29,7 @@ class MAELoss(RegressionLoss):
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.L1Loss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class MSELoss(RegressionLoss):
@@ -47,6 +48,7 @@ class MSELoss(RegressionLoss):
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.MSELoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class RMSELoss(RegressionLoss):
@@ -65,6 +67,7 @@ class RMSELoss(RegressionLoss):
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.MSELoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"
 
 
 class HuberLoss(RegressionLoss):
@@ -83,3 +86,4 @@ class HuberLoss(RegressionLoss):
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.HuberLoss().to(self._DEVICE)
+        self._behaviour: str = "minimization"

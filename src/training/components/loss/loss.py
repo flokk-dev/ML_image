@@ -26,6 +26,19 @@ class Loss:
         """ Instantiates a Loss. """
         # Attributes
         self._loss: torch.nn.Module = None
+        self._behaviour: str = None
+
+    @property
+    def behaviour(self) -> str:
+        """
+        Returns the loss' behaviour.
+
+        Returns
+        ----------
+            str
+                loss' behaviour
+        """
+        return self._behaviour
 
     def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
             -> torch.Tensor:

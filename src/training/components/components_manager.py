@@ -80,7 +80,7 @@ class TrainingComponentsManager:
         self._metrics: Dict[str, Metric] = self._init_metrics()
 
         # Early stopper
-        self._early_stopper: EarlyStopper = EarlyStopper(self._params)
+        self._early_stopper: EarlyStopper = EarlyStopper(self._params, self._loss.behaviour)
 
         # Dashboard
         self._dashboard: Dashboard = self._DASHBOARDS[self._params["output_dim"]](

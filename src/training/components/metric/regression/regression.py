@@ -28,9 +28,6 @@ class RegressionMetric(Metric):
         # Mother class
         super(RegressionMetric, self).__init__()
 
-        # Attributes
-        self._metric: torch.nn.Module = None
-
     def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
             -> torch.Tensor:
         """

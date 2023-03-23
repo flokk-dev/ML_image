@@ -27,7 +27,7 @@ class EarlyStopper:
             Checks if the current epoch is the best one, if so updates the early stopper
     """
 
-    def __init__(self, params: Dict[str, Any]):
+    def __init__(self, params: Dict[str, Any], loss_behaviour: str):
         """
         Instantiates an EarlyStopper.
 
@@ -35,11 +35,15 @@ class EarlyStopper:
         ----------
             params : Dict[str, Any]
                 parameters needed to adjust the program behaviour
+            loss_behaviour : str
+                how the training's loss function evolves
         """
         # Attributes
         self._max_duration: int = params["duration"]
+        self._evolves_well = lambda x, y: x < y if loss_behaviour == "minimization" else x > y
+
         self._current_best: Dict[str, Any] = {
-            "loss_value": float("inf"),
+            "loss_value": float("inf") if loss_behaviour == "minimization" else float("-inf"),
             "epoch": None,
             "duration": 0,
             "weights": None,
@@ -63,7 +67,7 @@ class EarlyStopper:
             bool
                 file paths within the dataset
         """
-        if loss_value < self._current_best["loss_value"]:
+        if self._evolves_well(loss_value, self._current_best["loss_value"]):
             self._current_best["loss_value"] = loss_value
             self._current_best["epoch"] = epoch_idx
             self._current_best["duration"] = 0

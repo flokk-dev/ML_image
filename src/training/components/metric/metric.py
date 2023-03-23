@@ -26,6 +26,7 @@ class Metric:
         """ Instantiates a Metric. """
         # Attributes
         self._metric: torch.nn.Module = None
+        self._behaviour: str = None
 
     def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
             -> torch.Tensor:
