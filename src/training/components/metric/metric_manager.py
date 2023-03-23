@@ -14,7 +14,10 @@ from .regression import MAE, MSE, RMSE, PSNR, SSIM
 
 
 class MetricManager(dict):
+    """ Represents a metric manager. """
+
     def __init__(self):
+        """ Instantiates a MetricManager. """
         # Mother class
         super(MetricManager, self).__init__({
             "classification": {
@@ -33,11 +36,25 @@ class MetricManager(dict):
             }
         })
 
-    def __call__(
-            self,
-            training_purpose: str,
-            metric_id: str
-    ) -> Metric:
+    def __call__(self, training_purpose: str, metric_id: str) -> Metric:
+        """
+        Parameters
+        ----------
+            training_purpose : str
+                purpose of the training
+            metric_id : str
+                id of the loss
+
+        Returns
+        ----------
+            Loss
+                loss function associated with the loss id
+
+        Raises
+        ----------
+            KeyError
+                loss id isn't handled by the loss manager
+        """
         try:
             return self[training_purpose][metric_id]()
         except KeyError:

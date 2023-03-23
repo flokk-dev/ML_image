@@ -7,7 +7,7 @@ Purpose:
 """
 
 # IMPORT: utils
-import typing
+from typing import *
 
 # IMPORT: project
 from .loader import Loader
@@ -17,33 +17,63 @@ from src.loading.dataset import UnsupervisedDataSet, SupervisedDataSet
 
 
 class UnsupervisedLoader(Loader):
-    def __init__(
-            self,
-            params: typing.Dict[str, typing.Any]
-    ):
+    """
+    Represents a loader for unsupervised deep learning problem.
+
+    Attributes
+    ----------
+        _params : Dict[str, Any]
+            parameters needed to adjust the program behaviour
+        _input_paths : Dict[str, List[str]]
+            file paths of the input data
+
+    Methods
+    ----------
+        _extract_paths
+            Extracts file paths from a dataset
+        _file_depth : int
+            Calculates the depth of the file within the dataset
+        _generate_data_loaders : Dict[str, UnsupervisedDataLoader]
+            Verifies the tensor's shape according to the desired dimension
+    """
+
+    def __init__(self, params: Dict[str, Any]):
         """
-        pass.
+        Instantiates a Loader.
+
+        Parameters
+        ----------
+            params : Dict[str, Any]
+                parameters needed to adjust the program behaviour
         """
         # Mother Class
         super(UnsupervisedLoader, self).__init__(params)
 
-    def _extract_paths(
-            self,
-            dataset_path: str
-    ):
+    def _extract_paths(self, dataset_path: str):
         """
-        pass.
+        Extracts file paths from a dataset.
+
+        Parameters
+        ----------
+            dataset_path : str
+                path to the dataset
         """
-        file_paths: typing.List[str] = super()._extract_paths(dataset_path)
+        file_paths: List[str] = super()._extract_paths(dataset_path)
 
         nb_paths: int = len(file_paths)
         for idx in range(nb_paths):
-            step: str = "train" if idx < int(nb_paths*0.8) else "valid"
+            step: str = "train" if idx < int(nb_paths * self._params["valid_coeff"]) else "valid"
+
             self._input_paths[step].append(file_paths[idx])
 
-    def _generate_data_loaders(self) -> typing.Dict[str, UnsupervisedDataLoader]:
+    def _generate_data_loaders(self) -> Dict[str, UnsupervisedDataLoader]:
         """
-        pass.
+        Generates data loaders using the extracted file paths.
+
+        Returns
+        ----------
+            Dict[str, UnsupervisedDataLoader]
+                data loaders containing training data
         """
         # Dataset
         train_dataset: UnsupervisedDataSet = UnsupervisedDataSet(
@@ -59,26 +89,55 @@ class UnsupervisedLoader(Loader):
             "valid": UnsupervisedDataLoader(self._params, valid_dataset)
         }
 
-    def __call__(
-            self,
-            dataset_path: str
-    ) -> typing.Dict[str, UnsupervisedDataLoader]:
+    def __call__(self, dataset_path: str) -> Dict[str, UnsupervisedDataLoader]:
         """
-        pass.
+        Parameters
+        ----------
+            dataset_path : str
+                path to the dataset
+
+        Returns
+        ----------
+            Dict[str, UnsupervisedDataLoader]
+                data loaders containing training data
         """
-        self._input_paths: typing.Dict[str, typing.List[str]] = {"train": list(), "valid": list()}
+        self._input_paths: Dict[str, List[str]] = {"train": list(), "valid": list()}
 
         self._extract_paths(dataset_path)
         return self._generate_data_loaders()
 
 
 class SupervisedLoader(Loader):
-    def __init__(
-            self,
-            params: typing.Dict[str, typing.Any]
-    ):
+    """
+    Represents a loader for supervised deep learning problem.
+
+    Attributes
+    ----------
+        _params : Dict[str, Any]
+            parameters needed to adjust the program behaviour
+        _input_paths : Dict[str, List[str]]
+            file paths of the input data
+        _target_paths : Dict[str, List[str]]
+            file paths of the target data
+
+    Methods
+    ----------
+        _extract_paths
+            Extracts file paths from a dataset
+        _file_depth : int
+            Calculates the depth of the file within the dataset
+        _generate_data_loaders : Dict[str, SupervisedDataLoader]
+            Verifies the tensor's shape according to the desired dimension
+    """
+
+    def __init__(self, params: Dict[str, Any]):
         """
-        pass.
+        Instantiates a Loader.
+
+        Parameters
+        ----------
+            params : Dict[str, Any]
+                parameters needed to adjust the program behaviour
         """
         # Mother Class
         super(SupervisedLoader, self).__init__(params)
@@ -86,25 +145,32 @@ class SupervisedLoader(Loader):
         # Attributes
         self._target_paths = {"train": list(), "valid": list()}
 
-    def _extract_paths(
-            self,
-            dataset_path: str
-    ):
+    def _extract_paths(self, dataset_path: str):
         """
-        pass.
+        Extracts file paths from a dataset.
+
+        Parameters
+        ----------
+            dataset_path : str
+                path to the dataset
         """
-        file_paths: typing.List[str] = super()._extract_paths(dataset_path)
+        file_paths: List[str] = super()._extract_paths(dataset_path)
 
         nb_paths: int = len(file_paths)
         for idx in range(0, nb_paths, 2):
-            step: str = "train" if idx < int(nb_paths * 0.8) else "valid"
+            step: str = "train" if idx < int(nb_paths * self._params["valid_coeff"]) else "valid"
 
             self._input_paths[step].append(file_paths[idx])
             self._target_paths[step].append(file_paths[idx+1])
 
-    def _generate_data_loaders(self) -> typing.Dict[str, SupervisedDataLoader]:
+    def _generate_data_loaders(self) -> Dict[str, SupervisedDataLoader]:
         """
-        pass.
+        Generates data loaders using the extracted file paths.
+
+        Returns
+        ----------
+            Dict[str, SupervisedDataLoader]
+                data loaders containing training data
         """
         # Dataset
         train_dataset: SupervisedDataSet = SupervisedDataSet(
@@ -120,15 +186,20 @@ class SupervisedLoader(Loader):
             "valid": SupervisedDataLoader(self._params, valid_dataset)
         }
 
-    def __call__(
-            self,
-            dataset_path: str
-    ) -> typing.Dict[str, SupervisedDataLoader]:
+    def __call__(self, dataset_path: str) -> Dict[str, SupervisedDataLoader]:
         """
-        pass.
+        Parameters
+        ----------
+            dataset_path : str
+                path to the dataset
+
+        Returns
+        ----------
+            Dict[str, SupervisedDataLoader]
+                data loaders containing training data
         """
-        self._input_paths: typing.Dict[str, typing.List[str]] = {"train": list(), "valid": list()}
-        self._target_paths: typing.Dict[str, typing.List[str]] = {"train": list(), "valid": list()}
+        self._input_paths: Dict[str, List[str]] = {"train": list(), "valid": list()}
+        self._target_paths: Dict[str, List[str]] = {"train": list(), "valid": list()}
 
         self._extract_paths(dataset_path)
         return self._generate_data_loaders()

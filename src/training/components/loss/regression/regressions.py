@@ -14,7 +14,17 @@ from .regression import RegressionLoss
 
 
 class MAELoss(RegressionLoss):
+    """
+    Represents a mean absolute error loss function.
+
+    Attributes
+    ----------
+        _loss : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a MAELoss. """
         super(MAELoss, self).__init__()
 
         # Attributes
@@ -22,7 +32,17 @@ class MAELoss(RegressionLoss):
 
 
 class MSELoss(RegressionLoss):
+    """
+    Represents a mean squared error loss function.
+
+    Attributes
+    ----------
+        _loss : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a MSELoss. """
         super(MSELoss, self).__init__()
 
         # Attributes
@@ -30,7 +50,17 @@ class MSELoss(RegressionLoss):
 
 
 class RMSELoss(RegressionLoss):
+    """
+    Represents a root mean squared error loss function.
+
+    Attributes
+    ----------
+        _loss : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a RMSELoss. """
         super(RMSELoss, self).__init__()
 
         # Attributes
@@ -38,7 +68,17 @@ class RMSELoss(RegressionLoss):
 
 
 class HuberLoss(RegressionLoss):
+    """
+    Represents a huber loss function.
+
+    Attributes
+    ----------
+        _loss : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a HuberLoss. """
         super(HuberLoss, self).__init__()
 
         # Attributes

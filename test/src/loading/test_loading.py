@@ -17,6 +17,7 @@ import pytest
 import paths
 
 from src.loading import Loader, UnsupervisedLoader, SupervisedLoader
+
 from src.loading.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
 
 
@@ -38,7 +39,8 @@ def loading():
     return Loader(
         params={
             "file_type": "tensor", "lazy_loading": True,
-            "file_depth": 0, "dataset_name": "data", "input_dim": 2, "output_dim": 2,
+            "file_depth": 0, "dataset_name": "data",
+            "input_dim": 2, "output_dim": 2, "out_channels": 1,
             "batch_size": 4
         }
     )
@@ -49,7 +51,8 @@ def unsupervised_loading():
     return UnsupervisedLoader(
         params={
             "file_type": "tensor", "lazy_loading": True,
-            "file_depth": 0, "dataset_name": "data", "input_dim": 2, "output_dim": 2,
+            "file_depth": 0, "dataset_name": "data",
+            "input_dim": 2, "output_dim": 2, "out_channels": 1,
             "batch_size": 4
         }
     )
@@ -60,7 +63,8 @@ def supervised_loading():
     return SupervisedLoader(
         params={
             "file_type": "tensor", "lazy_loading": True,
-            "file_depth": 0, "dataset_name": "data", "input_dim": 2, "output_dim": 2,
+            "file_depth": 0, "dataset_name": "data",
+            "input_dim": 2, "output_dim": 2, "out_channels": 1,
             "batch_size": 4
         }
     )

@@ -1,0 +1,21 @@
+{
+  "file_type": "tensor",
+  "lazy_loading": "True",
+  "input_dim": 2,
+  "output_dim": 2,
+
+  "dataset_name": "data",
+  "file_depth": 0,
+
+  "model": "unet",
+  "out_channels": 1,
+
+  "loss": "focal loss",
+  "metrics": ["f1score", "precision", "recall"],
+
+  "training_purpose": "classification",
+  "nb_epochs": 25,
+  "batch_size": 4,
+  "lr": 1e-2,
+  "lr_multiplier": 0.9
+}

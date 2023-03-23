@@ -7,7 +7,7 @@ Purpose:
 """
 
 # IMPORT: utils
-import typing
+from typing import *
 
 # IMPORT: data processing
 import torch
@@ -19,23 +19,49 @@ from src.loading.dataset.dataset import DataSet
 
 
 class UnsupervisedDataLoader(DataLoader):
-    def __init__(
-            self,
-            params: typing.Dict[str, typing.Any],
-            dataset: DataSet
-    ):
+    """
+    Represents a data loader for unsupervised deep learning problem.
+
+    Attributes
+    ----------
+        _params : Dict[str, Any]
+            parameters needed to adjust the program behaviour
+        data_info : Dict[str, int]
+            information about the data within the dataset
+
+    Methods
+    ----------
+        _collate_fn : TorchDataLoader
+            Loads dataset's data from file paths
+    """
+
+    def __init__(self, params: Dict[str, Any], dataset: DataSet):
         """
-        pass.
+        Instantiates a UnsupervisedDataLoader.
+
+        Parameters
+        ----------
+            params : Dict[str, Any]
+                parameters needed to adjust the program behaviour
+            dataset: DataSet
+                dataset containing file paths
         """
         # Mother Class
         super(UnsupervisedDataLoader, self).__init__(params, dataset)
 
-    def _collate_fn(
-            self,
-            data: typing.List[torch.Tensor]
-    ) -> TorchDataLoader:
+    def _collate_fn(self, data: List[torch.Tensor]) -> TorchDataLoader:
         """
-        pass.
+        Defines the data loader's behaviour when getting data.
+
+        Parameters
+        ----------
+            data : List[torch.Tensor]
+                list containing the recovered data
+
+        Returns
+        ----------
+            TorchDataLoader
+                data loader containing the aggregated data
         """
         inputs: torch.Tensor = torch.cat(data, dim=0)
 
@@ -46,23 +72,49 @@ class UnsupervisedDataLoader(DataLoader):
 
 
 class SupervisedDataLoader(DataLoader):
-    def __init__(
-            self,
-            params: typing.Dict[str, typing.Any],
-            dataset: DataSet
-    ):
+    """
+    Represents a data loader for unsupervised deep learning problem.
+
+    Attributes
+    ----------
+        _params : Dict[str, Any]
+            parameters needed to adjust the program behaviour
+        data_info : Dict[str, int]
+            information about the data within the dataset
+
+    Methods
+    ----------
+        _collate_fn : TorchDataLoader
+            Loads dataset's data from file paths
+    """
+
+    def __init__(self, params: Dict[str, Any], dataset: DataSet):
         """
-        pass.
+        Instantiates a SupervisedDataLoader.
+
+        Parameters
+        ----------
+            params : Dict[str, Any]
+                parameters needed to adjust the program behaviour
+            dataset: DataSet
+                dataset containing file paths
         """
         # Mother Class
         super(SupervisedDataLoader, self).__init__(params, dataset)
 
-    def _collate_fn(
-            self,
-            data: typing.List[typing.Tuple[torch.Tensor, torch.Tensor]]
-    ) -> TorchDataLoader:
+    def _collate_fn(self, data: List[Tuple[torch.Tensor, torch.Tensor]]) -> TorchDataLoader:
         """
-        pass.
+        Defines the data loader's behaviour when getting data.
+
+        Parameters
+        ----------
+            data : List[Tuple[torch.Tensor, torch.Tensor]]
+                list containing the recovered data
+
+        Returns
+        ----------
+            TorchDataLoader
+                data loader containing the aggregated data
         """
         tensors: tuple = tuple(zip(*[(input_t, target_t) for input_t, target_t in data]))
 

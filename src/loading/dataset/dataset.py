@@ -5,12 +5,11 @@ Version: 1.0
 
 Purpose:
 """
-import typing
 
 # IMPORT: utils
-from tqdm import tqdm
+from typing import *
 
-# IMPORT: dataset loading
+# IMPORT: data loading
 import torch
 from torch.utils.data import Dataset
 
@@ -20,52 +19,80 @@ from .data_chopper import DataChopper, DataChopper2D, DataChopper25D, DataChoppe
 
 
 class DataSet(Dataset):
-    _FILE_LOADERS: typing.Dict[str, typing.Any] = {
+    """
+    Represents a general dataset, that will be derived depending on the use case.
+
+    Attributes
+    ----------
+        _params : Dict[str, Any]
+            parameters needed to adjust the program behaviour
+        data_info : Dict[str, int]
+            information about the data within the dataset
+        _inputs : List[Union[str, torch.Tensor]]
+            input tensors
+        _file_loader : FileLoader
+            components allowing to load file from path
+        _data_chopper : DataChopper
+            components allowing to chop
+
+    Methods
+    ----------
+        _load_dataset
+            Loads dataset's data from file paths
+        _get_data : torch.Tensor
+            Gets data from dataset
+        _verify_shape
+            Verifies the tensor's shape according to the desired dimension
+        _adjust_shape : torch.Tensor
+            Adjusts the tensor's shape according to the desired dimension
+        _collect_data_info : Dict[str, int]
+            Collects information about the tensor
+    """
+
+    _FILE_LOADERS: Dict[str, Any] = {
         "image": ImageLoader, "numpy": NpyLoader, "zstd": NpzLoader, "tensor": PtLoader
     }
-    _DATA_CHOPPERS: typing.Dict[int, typing.Any] = {
+    _DATA_CHOPPERS: Dict[int, Any] = {
         2: DataChopper2D, 2.5: DataChopper25D, 3: DataChopper3D
     }
 
-    def __init__(
-            self,
-            params: typing.Dict[str, typing.Any],
-            input_paths: typing.List[str],
-            target_paths: typing.List[str] = None
-    ):
+    def __init__(self, params: Dict[str, Any], inputs: List[str]):
         """
-        pass.
+        Instantiates a DataSet.
+
+        Parameters
+        ----------
+            params : Dict[str, Any]
+                parameters needed to adjust the program behaviour
+            inputs : List[str]
+                input tensors' paths
         """
         # Mother Class
         super(DataSet, self).__init__()
 
         # Attributes
-        self._params: typing.Dict[str, typing.Any] = params
-        self.data_info: typing.Dict[str, int] = dict()
+        self._params: Dict[str, Any] = params
+        self.data_info: Dict[str, int] = dict()
 
-        self._inputs: typing.List[str, torch.Tensor] = input_paths
-        self._targets: typing.List[str, torch.Tensor] = target_paths
+        self._inputs: List[Union[str, torch.Tensor]] = inputs
 
         # Components
         self._file_loader: FileLoader = self._FILE_LOADERS[params["file_type"]]()
         self._data_chopper: DataChopper = self._DATA_CHOPPERS[params["output_dim"]]()
 
-    def _load_dataset(self):
+    def _get_data(self, tensor: Union[str, torch.Tensor]) -> torch.Tensor:
         """
-        pass.
-        """
-        for idx, file_path in enumerate(tqdm(self._inputs, desc="Loading the data in RAM.")):
-            self._inputs[idx] = self._get_data(self._inputs[idx])
+        Gets data from dataset.
 
-            if self._targets is not None:
-                self._targets[idx] = self._get_data(self._targets[idx])
+        Parameters
+        ----------
+            tensor : Union[str, torch.Tensor]
+                data to get, either a file's path or a tensor
 
-    def _get_data(
-            self,
-            tensor: [str, torch.Tensor]
-    ) -> torch.Tensor:
-        """
-        pass.
+        Returns
+        ----------
+            torch.Tensor
+                either the loaded tensor or the tensor itself
         """
         if isinstance(tensor, torch.Tensor):
             return tensor
@@ -79,12 +106,19 @@ class DataSet(Dataset):
         # ADJUST SHAPE
         return self._adjust_shape(tensor)
 
-    def _verify_shape(
-            self,
-            tensor: torch.Tensor
-    ):
+    def _verify_shape(self, tensor: torch.Tensor):
         """
-        pass.
+        Verifies the tensor's shape according to the desired dimension.
+
+        Parameters
+        ----------
+            tensor : torch.Tensor
+                tensor whose shape is to be verified
+
+        Raises
+        ----------
+            ValueError
+                tensor's shape isn't valid
         """
         dim: int = self._params["input_dim"]
 
@@ -101,22 +135,29 @@ class DataSet(Dataset):
             if torch.sum((torch.Tensor(tuple(tensor.shape)) > 1)) >= dim + 2:
                 raise ValueError(f"The tensor's shape isn't valid: {tensor.shape}")
 
-    def _adjust_shape(
-            self,
-            tensor: torch.Tensor
-    ) -> torch.Tensor:
+    def _adjust_shape(self, tensor: torch.Tensor) -> torch.Tensor:
         """
-        pass.
+        Adjusts the tensor's shape according to the desired dimension.
+
+        Parameters
+        ----------
+            tensor : torch.Tensor
+                tensor whose shape is to be adjusted
+
+        Returns
+        ----------
+            torch.Tensor
+                adjusted tensor
         """
         dim: int = self._params["input_dim"]
 
         #
-        if len(tensor.shape) == dim+2:
+        if len(tensor.shape) == dim + 2:
             if tensor.shape[0] == 1:
                 tensor = tensor.squeeze(0)
 
         #
-        if len(tensor.shape) == dim+1 and tensor.shape[-1] == min(tensor.shape):
+        if len(tensor.shape) == dim + 1 and tensor.shape[-1] == min(tensor.shape):
             dims_order = (dim, *(i for i in range(dim)))
             tensor = torch.permute(tensor, dims_order)
 
@@ -126,14 +167,20 @@ class DataSet(Dataset):
 
         return tensor.unsqueeze(0)
 
-    def _collect_data_info(
-            self,
-            tensor: torch.Tensor
-    ) -> typing.Dict[str, int]:
+    def _collect_data_info(self, tensor: torch.Tensor) -> Dict[str, int]:
         """
-        pass.
+        Collects information about the tensor.
+
+        Parameters
+        ----------
+            tensor : torch.Tensor
+                tensor to get information from
+
+        Returns
+        ----------
+            Dict[str, int]
+                information about the tensor
         """
-        print(tensor.shape)
         return {
             "spatial_dims": len(tensor.shape) - 2,
             "img_size": tuple(tensor.shape[2:]),
@@ -141,17 +188,36 @@ class DataSet(Dataset):
             "out_channels": self._params["out_channels"]
         }
 
-    def __getitem__(
-            self,
-            idx: int
-    ) -> typing.Any:
+    def _load_dataset(self):
         """
-        pass.
+        Loads dataset's data from file paths.
+
+        Raises
+        ----------
+            NotImplementedError
+                function isn't implemented yet
+        """
+        raise NotImplementedError()
+
+    def __getitem__(self, idx: int) -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
+        """
+        Parameters
+        ----------
+            idx : int
+                index of the item to get within the dataset
+
+        Returns
+        ----------
+            Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]
+                either a single tensor or a tuple of tensors
         """
         raise NotImplementedError()
 
     def __len__(self) -> int:
         """
-        pass.
+        Returns
+        ----------
+            int
+                dataset's length
         """
         return len(self._inputs)

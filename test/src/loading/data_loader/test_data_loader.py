@@ -16,8 +16,8 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.data_loader.data_loader import DataLoader
-from src.loading.data_loader import UnsupervisedDataLoader, SupervisedDataLoader
+from src.loading.data_loader import DataLoader, \
+    UnsupervisedDataLoader, SupervisedDataLoader
 
 from src.loading.dataset import UnsupervisedDataSet, SupervisedDataSet
 
@@ -35,18 +35,28 @@ LENGHT_TENSOR_3D = 32
 # -------------------- FIXTURES -------------------- #
 
 def dataset_to_modify(training_type, lazy_loading, input_dim, output_dim):
-    datasets = {"unsupervised": UnsupervisedDataSet, "supervised": SupervisedDataSet}
-    return datasets[training_type](
-        params={
-            "file_type": "tensor", "lazy_loading": lazy_loading,
-            "input_dim": input_dim, "output_dim": output_dim
-        },
-        input_paths=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)],
-        target_paths=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)]
-    )
+    if training_type == "unsupervised":
+        return UnsupervisedDataSet(
+            params={
+                "file_type": "tensor", "lazy_loading": lazy_loading,
+                "input_dim": input_dim, "output_dim": output_dim, "out_channels": 1
+            },
+            inputs=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)],
+        )
+
+    elif training_type == "supervised":
+        return SupervisedDataSet(
+            params={
+                "file_type": "tensor", "lazy_loading": lazy_loading,
+                "input_dim": input_dim, "output_dim": output_dim, "out_channels": 1
+            },
+            inputs=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)],
+            targets=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)]
+        )
 
 
 # -------------------- DATA LOADER -------------------- #
+
 def test_data_loader():
     dataset = dataset_to_modify(
         training_type="supervised", lazy_loading=True,

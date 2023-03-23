@@ -6,23 +6,40 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: utils
-import typing
-
 # IMPORT: deep learning
 import torch
 
 
 class Loss:
+    """
+    Represents a general loss function, that will be derived depending on the use case.
+
+    Attributes
+    ----------
+        _loss : torch.nn.Module
+            loss function to apply.
+    """
+
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
     def __init__(self):
+        """ Instantiates a Loss. """
         # Attributes
-        self._loss: typing.Any = None
+        self._loss: torch.nn.Module = None
 
-    def __call__(
-            self,
-            prediction: torch.Tensor,
-            target: torch.Tensor
-    ) -> typing.Any:
+    def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
+            -> torch.Tensor:
+        """
+        Parameters
+        ----------
+            prediction_batch : torch.Tensor
+                batch of predicted tensors
+            target_batch : torch.Tensor
+                batch of target tensors
+
+        Raises
+        ----------
+            NotImplementedError
+                function isn't implemented yet
+        """
         raise NotImplementedError()

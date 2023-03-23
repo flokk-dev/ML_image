@@ -7,7 +7,7 @@ Purpose:
 """
 
 # IMPORT: utils
-import typing
+from typing import *
 
 # IMPORT: deep learning
 import torch
@@ -15,13 +15,28 @@ from monai.networks.nets import BasicUNet, AttentionUnet, UNETR, SwinUNETR
 
 
 class UNet(BasicUNet):
+    """
+    Represents an U-Net model.
+
+    Attributes
+    ----------
+        _name : str
+            the model's name
+    """
+
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(
-            self,
-            data_info: typing.Dict[str, int],
-            weights_path: str = None
-    ):
+    def __init__(self, data_info: Dict[str, int], weights_path: str = None):
+        """
+        Instantiates a UNet.
+
+        Parameters
+        ----------
+            data_info : Dict[str, int]
+                information about the data within the dataset
+            weights_path : str
+                path to the model's weights
+        """
         # Mother class
         super(UNet, self).__init__(
             spatial_dims=data_info["spatial_dims"],
@@ -32,21 +47,44 @@ class UNet(BasicUNet):
         self.to(self._DEVICE)
 
         # Attributes
+        self._name: str = f"UNet_{data_info['spatial_dims']}"
+
         if weights_path is not None:
-            self._model.load_state_dict(torch.load(weights_path))
+            self.load_state_dict(torch.load(weights_path))
 
     def __str__(self) -> str:
-        return "UNet"
+        """
+        Returns
+        ----------
+            str
+                the model's name
+        """
+        return self._name
 
 
 class AttentionUNet(AttentionUnet):
+    """
+    Represents an attention U-Net model.
+
+    Attributes
+    ----------
+        _name : str
+            the model's name
+    """
+
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(
-            self,
-            data_info: typing.Dict[str, int],
-            weights_path: str = None
-    ):
+    def __init__(self, data_info: Dict[str, int], weights_path: str = None):
+        """
+        Instantiates a AttentionUNet.
+
+        Parameters
+        ----------
+            data_info : Dict[str, int]
+                information about the data within the dataset
+            weights_path : str
+                path to the model's weights
+        """
         # Mother class
         super(AttentionUNet, self).__init__(
             spatial_dims=data_info["spatial_dims"],
@@ -58,21 +96,44 @@ class AttentionUNet(AttentionUnet):
         self.to(self._DEVICE)
 
         # Attributes
+        self._name: str = f"AttentionUNet_{data_info['spatial_dims']}"
+
         if weights_path is not None:
-            self._model.load_state_dict(torch.load(weights_path))
+            self.load_state_dict(torch.load(weights_path))
 
     def __str__(self) -> str:
-        return "AttentionUNet"
+        """
+        Returns
+        ----------
+            str
+                the model's name
+        """
+        return self._name
 
 
 class Transformer(UNETR):
+    """
+    Represents a transformer model.
+
+    Attributes
+    ----------
+        _name : str
+            the model's name
+    """
+
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(
-            self,
-            data_info: typing.Dict[str, int],
-            weights_path: str = None
-    ):
+    def __init__(self, data_info: Dict[str, int], weights_path: str = None):
+        """
+        Instantiates a Transformer.
+
+        Parameters
+        ----------
+            data_info : Dict[str, int]
+                information about the data within the dataset
+            weights_path : str
+                path to the model's weights
+        """
         # Mother class
         super(Transformer, self).__init__(
             img_size=data_info["img_size"],
@@ -84,21 +145,44 @@ class Transformer(UNETR):
         self.to(self._DEVICE)
 
         # Attributes
+        self._name: str = f"Transformer_{data_info['spatial_dims']}"
+
         if weights_path is not None:
-            self._model.load_state_dict(torch.load(weights_path))
+            self.load_state_dict(torch.load(weights_path))
 
     def __str__(self) -> str:
-        return "Transformer"
+        """
+        Returns
+        ----------
+            str
+                the model's name
+        """
+        return self._name
 
 
 class SWinTransformer(SwinUNETR):
+    """
+    Represents a SWin transformer model.
+
+    Attributes
+    ----------
+        _name : str
+            the model's name
+    """
+
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(
-            self,
-            data_info: typing.Dict[str, int],
-            weights_path: str = None
-    ):
+    def __init__(self, data_info: Dict[str, int], weights_path: str = None):
+        """
+        Instantiates a SWinTransformer.
+
+        Parameters
+        ----------
+            data_info : Dict[str, int]
+                information about the data within the dataset
+            weights_path : str
+                path to the model's weights
+        """
         # Mother class
         super(SWinTransformer, self).__init__(
             img_size=data_info["img_size"],
@@ -110,8 +194,16 @@ class SWinTransformer(SwinUNETR):
         self.to(self._DEVICE)
 
         # Attributes
+        self._name: str = f"SWinTransformer_{data_info['spatial_dims']}"
+
         if weights_path is not None:
-            self._model.load_state_dict(torch.load(weights_path))
+            self.load_state_dict(torch.load(weights_path))
 
     def __str__(self) -> str:
-        return "SWinTransformer"
+        """
+        Returns
+        ----------
+            str
+                the model's name
+        """
+        return self._name

@@ -7,30 +7,63 @@ Purpose:
 """
 
 # IMPORT: utils
-import typing
+from typing import *
 import os
+
+# IMPORT: project
+from .data_loader import DataLoader
 
 
 class Loader:
-    def __init__(
-            self, 
-            params: typing.Dict[str, typing.Any]
-    ):
+    """
+    Represents a general loader, that will be derived depending on the use case.
+
+    Attributes
+    ----------
+        _params : Dict[str, Any]
+            parameters needed to adjust the program behaviour
+        _input_paths : Dict[str, List[str]]
+            the file paths of the input data
+
+    Methods
+    ----------
+        _extract_paths : List[str]
+            Extracts file paths from a dataset
+        _file_depth : int
+            Calculates the depth of the file within the dataset
+        _generate_data_loaders : Dict[str, DataLoader]
+            Verifies the tensor's shape according to the desired dimension
+    """
+
+    def __init__(self, params: Dict[str, Any]):
         """
-        pass.
+        Instantiates a Loader.
+
+        Parameters
+        ----------
+            params : Dict[str, Any]
+                parameters needed to adjust the program behaviour
         """
         # Attributes
-        self._params: typing.Dict[str, typing.Any] = params
-        self._input_paths: typing.Dict[str, typing.List[str]] = {"train": list(), "valid": list()}
+        self._params: Dict[str, Any] = params
+        self._input_paths: Dict[str, List[str]] = {"train": list(), "valid": list()}
 
-    def _extract_paths(
-            self,
-            dataset_path: str
-    ) -> typing.List[str]:
+    def _extract_paths(self, dataset_path: str) -> List[str]:
         """
-        pass.
+        Extracts file paths from a dataset.
+
+        Parameters
+        ----------
+            dataset_path : str
+                path to the dataset
+
+        Returns
+        ----------
+            List[str]
+                file paths within the dataset
         """
-        file_paths: typing.List[str] = list()
+        file_paths: List[str] = list()
+
         for root, dirs, files in os.walk(dataset_path, topdown=False):
             for file_path in map(lambda e: os.path.join(root, e), files):
                 if self._file_depth(file_path, self._params["dataset_name"]) == self._params["file_depth"]:
@@ -39,12 +72,21 @@ class Loader:
         return list(sorted(file_paths))
 
     @staticmethod
-    def _file_depth(
-            path: str,
-            dataset_name: str
-    ) -> int:
+    def _file_depth(path: str, dataset_name: str) -> int:
         """
-        pass.
+        Calculates the depth of the file within the dataset
+
+        Parameters
+        ----------
+            path : str
+                file path whose depth is to be calculated
+            dataset_name: str
+                name of the dataset
+
+        Returns
+        ----------
+            int
+                depth of the file within the dataset
         """
         # try to find "dataset_name" in path
         try:
@@ -58,17 +100,27 @@ class Loader:
             except ValueError:
                 raise ValueError(f"\"{dataset_name}\" n'apparait pas dans le chemin spécifié.")
 
-    def _generate_data_loaders(self) -> typing.Any:
+    def _generate_data_loaders(self) -> Dict[str, DataLoader]:
         """
-        pass.
+        Generates data loaders using the extracted file paths.
+
+        Returns
+        ----------
+            Dict[str, DataLoader]
+                the data loaders containing training data
         """
         raise NotImplementedError()
 
-    def __call__(
-            self,
-            dataset_path
-    ) -> typing.Any:
+    def __call__(self, dataset_path: str) -> Dict[str, DataLoader]:
         """
-        pass.
+        Parameters
+        ----------
+            dataset_path : str
+                path to the dataset
+
+        Raises
+        ----------
+            NotImplementedError
+                function isn't implemented yet
         """
         raise NotImplementedError()

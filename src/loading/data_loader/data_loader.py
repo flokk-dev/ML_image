@@ -7,9 +7,10 @@ Purpose:
 """
 
 # IMPORT: utils
-import typing
+from typing import *
 
 # IMPORT: data loading
+import torch
 from torch.utils.data import DataLoader as TorchDataLoader
 
 # IMPORT: project
@@ -17,13 +18,32 @@ from src.loading.dataset.dataset import DataSet
 
 
 class DataLoader(TorchDataLoader):
-    def __init__(
-        self,
-        params: typing.Dict[str, typing.Any],
-        dataset: DataSet
-    ):
+    """
+    Represents a general data loader, that will be derived depending on the use case.
+
+    Attributes
+    ----------
+        _params : Dict[str, Any]
+            parameters needed to adjust the program behaviour
+        data_info : Dict[str, int]
+            information about the data within the dataset
+
+    Methods
+    ----------
+        _collate_fn : TorchDataLoader
+            Loads dataset's data from file paths
+    """
+
+    def __init__(self, params: Dict[str, Any], dataset: DataSet):
         """
-        pass.
+        Instantiates a DataLoader.
+
+        Parameters
+        ----------
+            params : Dict[str, Any]
+                parameters needed to adjust the program behaviour
+            dataset: DataSet
+                dataset containing file paths
         """
         # Mother Class
         super(DataLoader, self).__init__(
@@ -33,14 +53,22 @@ class DataLoader(TorchDataLoader):
         )
 
         # Attributes
-        self._params: dict = params
-        self.data_info: dict = dataset.data_info
+        self._params: Dict[str, Any] = params
+        self.data_info: Dict[str, int] = dataset.data_info
 
-    def _collate_fn(
-        self,
-        data: typing.List[typing.Any]
-    ) -> TorchDataLoader:
+    def _collate_fn(self, data: List[Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]]) \
+            -> TorchDataLoader:
         """
-        pass.
+        Defines the data loader's behaviour when getting data.
+
+        Parameters
+        ----------
+            data : List[Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]]
+                list containing the recovered data
+
+        Raises
+        ----------
+            NotImplementedError
+                function isn't implemented yet
         """
         raise NotImplementedError()

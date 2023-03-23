@@ -7,35 +7,56 @@ Purpose:
 """
 
 # IMPORT: utils
-import typing
-
-# IMPORT: data processing
+from typing import *
 import torch
 
 
 class DataChopper:
+    """
+    Represents a general data chopper, that will be derived depending on the use case.
+
+    Methods
+    ----------
+        _chop : Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]
+            Chops data to match the desired output dimension
+    """
+
     def __init__(self):
-        """
-        pass.
-        """
+        """ Instantiates a DataChopper. """
         pass
 
-    def _chop(
-            self,
-            input_t: torch.Tensor,
-            target_t: torch.Tensor = None
-    ) -> typing.Any:
+    def _chop(self, input_t: torch.Tensor, target_t: torch.Tensor = None) \
+            -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
         """
-        pass.
+        Chops data to match the desired output dimension.
+
+        Parameters
+        ----------
+            input_t : torch.Tensor
+                input tensor
+            target_t : torch.Tensor
+                target tensor
+
+        Raises
+        ----------
+            NotImplementedError
+                function isn't implemented yet
         """
         raise NotImplementedError()
 
-    def __call__(
-            self,
-            input_t: torch.Tensor,
-            target_t: torch.Tensor = None
-    ) -> typing.Any:
+    def __call__(self, input_t: torch.Tensor, target_t: torch.Tensor = None) \
+            -> Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]:
         """
-        pass.
+        Parameters
+        ----------
+            input_t : torch.Tensor
+                input tensor
+            target_t : torch.Tensor
+                target tensor
+
+        Returns
+        ----------
+            Union[torch.Tensor, Tuple[torch.Tensor, torch.Tensor]]
+                chopped tensors
         """
         return self._chop(input_t, target_t)

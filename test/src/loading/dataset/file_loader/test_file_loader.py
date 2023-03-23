@@ -16,7 +16,7 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset.file_loader import FileLoader,\
+from src.loading.dataset.file_loader import FileLoader, \
     ImageLoader, NpyLoader, NpzLoader, PtLoader
 
 

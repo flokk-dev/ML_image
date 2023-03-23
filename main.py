@@ -6,81 +6,73 @@ Version: 1.0
 Purpose:
 """
 
-# IMPORT: toolbox_ml
+# IMPORT: utils
 import argparse
+import json
 
-# IMPORT: deep learning
-import torch
+# import warnings
+# warnings.filterwarnings("ignore")
 
 # IMPORT: projet
-from src import Trainer2D, Trainer25D, Trainer3D, Inference2D, Inference25D, Inference3D
+import paths
 
-# WARNINGS SHUT DOWN
-import warnings
-warnings.filterwarnings("ignore")
+from src import UnsupervisedTrainer, SupervisedTrainer
 
 
-def get_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Get models training parameters.")
+class Parser(argparse.ArgumentParser):
+    def __init__(self):
+        # Mother class
+        super(Parser, self).__init__(description="Get models training parameters.")
 
-    parser.add_argument("-s", "--src", type=str, nargs="?", help="the dataset's path.")
+        # dataset
+        self.add_argument(
+            "-d", "--dataset", type=str, nargs="?",
+            help="path to the dataset"
+        )
 
-    parser.add_argument("-m", "--models", type=str, nargs="?", default=None,
-                        help="the models's path.")
+        # weights
+        self.add_argument(
+            "-w", "--weights", type=str, nargs="?",
+            default=None,
+            help="path to the model's weights"
+        )
 
-    parser.add_argument("-p", "--pipe", type=str, nargs="?",
-                        choices=["train", "inference"], default="train",
-                        help="the type of pipeline to use")
+        # pipeline
+        self.add_argument(
+            "-p", "--pipeline", type=str, nargs="?",
+            choices=["training", "inference"], default="training",
+            help="pipeline to use"
+        )
 
-    parser.add_argument("-ll", "--lazy_loading", type=str, nargs="?", default=False,
-                        help="the loading method.")
+        # training type
+        self.add_argument(
+            "-t", "--training_type", type=str, nargs="?",
+            choices=["unsupervised", "supervised"], default="supervised",
+            help="the type of training"
+        )
 
-    parser.add_argument("-n", "--nb_data", type=int, nargs="?", default=1000,
-                        help="the number of dataset to train on.")
-
-    parser.add_argument("-d", "--dim", type=str, nargs="?", default="2D",
-                        help="the models's dataset dimension.")
-
-    parser.add_argument("-ph", "--patch_height", type=int, nargs="?", default=5,
-                        help="the height of the patches in 2.5D.")
-
-    return parser
+        # quantity
+        self.add_argument(
+            "-q", "--quantity", type=int, nargs="?",
+            default=1000,
+            help="quantity of data to use during the training"
+        )
 
 
-def get_params(args) -> dict:
-    params = {
-        "lazy_loading": args.lazy_loading,
-        "nb_data": args.nb_data,
-        "patch_height": args.patch_height if args.dim == "25D" else None,
-        "batch_size": 32,
-        "epochs": 25,
-        "workers": 1,
-        "lr": 1e-2,
-        "lr_multiplier": 0.9,
-        "valid_coeff": 0.2
-    }
-
-    return params
-
+TASKS = {
+    "training": {"unsupervised": UnsupervisedTrainer, "supervised": SupervisedTrainer},
+    "inference": {"unsupervised": None, "supervised": None},
+}
 
 if __name__ == "__main__":
-    # Free the memory
-    torch.cuda.empty_cache()
-
-    # Parameters
-    parser = get_parser()
+    # Training arguments
+    parser = Parser()
     args = parser.parse_args()
-    params = get_params(parser.parse_args())
 
-    print()
-    for key, value in params.items():
-        print(f"{key}: {value}")
+    # Training parameters
+    with open(paths.CONFIG_PATH) as json_file:
+        training_parameters = json.load(json_file)
 
-    # Training
-    tasks = {
-        "train": {"2D": Trainer2D, "25D": Trainer25D, "3D": Trainer3D},
-        "inference": {"2D": Inference2D, "25D": Inference25D, "3D": Inference3D}
-    }
-
-    task = tasks[args.pipe][args.dim](data_path=args.src, params=params, model_path=args.model)
-    task.launch()
+    # Launch training
+    task = TASKS[args.pipeline][args.training_type](params=training_parameters)
+    task(data_path=args.dataset, weights_path=args.weights)

@@ -15,7 +15,17 @@ from .classification import ClassificationMetric
 
 
 class Accuracy(ClassificationMetric):
+    """
+    Represents an accuracy metric.
+
+    Attributes
+    ----------
+        _metric : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a Accuracy. """
         super(Accuracy, self).__init__()
 
         # Attributes
@@ -23,7 +33,17 @@ class Accuracy(ClassificationMetric):
 
 
 class JaccardIndex(ClassificationMetric):
+    """
+    Represents a jaccard index metric.
+
+    Attributes
+    ----------
+        _metric : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a JaccardIndex. """
         super(JaccardIndex, self).__init__()
 
         # Attributes
@@ -31,7 +51,17 @@ class JaccardIndex(ClassificationMetric):
 
 
 class Precision(ClassificationMetric):
+    """
+    Represents a precision metric.
+
+    Attributes
+    ----------
+        _metric : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a Precision. """
         super(Precision, self).__init__()
 
         # Attributes
@@ -39,7 +69,17 @@ class Precision(ClassificationMetric):
 
 
 class Recall(ClassificationMetric):
+    """
+    Represents a recall metric.
+
+    Attributes
+    ----------
+        _metric : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a Recall. """
         super(Recall, self).__init__()
 
         # Attributes
@@ -47,7 +87,17 @@ class Recall(ClassificationMetric):
 
 
 class F1Score(ClassificationMetric):
+    """
+    Represents a f1score metric.
+
+    Attributes
+    ----------
+        _metric : torch.nn.Module
+            loss function to apply.
+    """
+
     def __init__(self):
+        """ Instantiates a F1Score. """
         super(F1Score, self).__init__()
 
         # Attributes

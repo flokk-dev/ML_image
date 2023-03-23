@@ -16,11 +16,10 @@ import pytest
 # IMPORT: project
 import paths
 
-from src.loading.dataset import SupervisedDataSet
-
 from src.loading.dataset.data_chopper import DataChopper, \
     DataChopper2D, DataChopper25D, DataChopper3D
 
+from src.loading.dataset import SupervisedDataSet
 
 # -------------------- CONSTANT -------------------- #
 
@@ -39,10 +38,10 @@ def input_target_tensors():
     dataset = SupervisedDataSet(
         params={
             "training_type": "supervised", "file_type": "tensor", "lazy_loading": True,
-            "input_dim": 3, "output_dim": 2
+            "input_dim": 3, "output_dim": 2, "out_channels": 1
         },
-        input_paths=[DATA_PATHS["tensor"]["3D"]],
-        target_paths=[DATA_PATHS["tensor"]["3D"]]
+        inputs=[DATA_PATHS["tensor"]["3D"]],
+        targets=[DATA_PATHS["tensor"]["3D"]]
     )
     return dataset._get_data(dataset._inputs[0]), dataset._get_data(dataset._targets[0])
 

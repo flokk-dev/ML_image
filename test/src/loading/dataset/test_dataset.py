@@ -42,31 +42,36 @@ def dataset():
     return DataSet(
         params={
             "file_type": "tensor", "lazy_loading": True,
-            "input_dim": 2, "output_dim": 2, "out_channels": 2
+            "input_dim": 2, "output_dim": 2, "out_channels": 1
         },
-        input_paths=[DATA_PATHS["tensor"]["2D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["3D"]],
-        target_paths=[DATA_PATHS["tensor"]["2D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["3D"]]
+        inputs=[DATA_PATHS["tensor"]["2D"], DATA_PATHS["image"]["2D"], DATA_PATHS["tensor"]["3D"]],
     )
 
 
 def dataset_to_modify(training_type, file_type, lazy_loading, input_dim, output_dim):
-    datasets = {"unsupervised": UnsupervisedDataSet, "supervised": SupervisedDataSet}
-    return datasets[training_type](
-        params={
-            "file_type": file_type, "lazy_loading": lazy_loading,
-            "input_dim": input_dim, "output_dim": output_dim, "out_channels": 2
-        },
-        input_paths=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)],
-        target_paths=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)]
-    )
+    if training_type == "unsupervised":
+        return UnsupervisedDataSet(
+            params={
+                "file_type": file_type, "lazy_loading": lazy_loading,
+                "input_dim": input_dim, "output_dim": output_dim, "out_channels": 1
+            },
+            inputs=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)],
+        )
+
+    elif training_type == "supervised":
+        return SupervisedDataSet(
+            params={
+                "file_type": file_type, "lazy_loading": lazy_loading,
+                "input_dim": input_dim, "output_dim": output_dim, "out_channels": 1
+            },
+            inputs=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)],
+            targets=[DATA_PATHS[file_type][f"{str(input_dim)}D"] for i in range(10)]
+        )
 
 
 # -------------------- DATASET -------------------- #
 
 def test_dataset(dataset):
-    with pytest.raises(NotImplementedError):
-        input_tensor, target_tensor = dataset._collect_data_info()
-
     with pytest.raises(NotImplementedError):
         input_tensor, target_tensor = dataset.__getitem__(0)
 
@@ -88,7 +93,7 @@ def test_dataset_collect_data_info():
     assert data_info["spatial_dims"] == 2
     assert data_info["img_size"] == (32, 32)
     assert data_info["in_channels"] == 1
-    assert data_info["out_channels"] == 2
+    assert data_info["out_channels"] == 1
 
 
 def test_dataset_verify_shape_wrong(dataset):

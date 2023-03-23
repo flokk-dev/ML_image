@@ -19,7 +19,6 @@ from src.training.components.model.unet import UNet, AttentionUNet, Transformer,
 
 # -------------------- FIXTURES -------------------- #
 
-
 @pytest.fixture(scope="function")
 def model_manager():
     return ModelManager()

@@ -1,1 +1,1 @@
-from .components import TrainingComponents
+from .components_manager import TrainingComponentsManager

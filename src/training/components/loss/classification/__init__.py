@@ -1,3 +1,2 @@
-from .classifications import \
-    CELoss, BCELoss, DiceLoss, \
+from .classifications import CELoss, BCELoss, DiceLoss, \
     DiceCELoss, DiceFocalLoss, FocalLoss, FocalTverskyLoss
