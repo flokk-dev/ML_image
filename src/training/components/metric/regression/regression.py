@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+from typing import *
+
 # IMPORT: deep learning
 import torch
 
@@ -20,13 +23,24 @@ class RegressionMetric(Metric):
     Attributes
     ----------
         _metric : torch.nn.Module
-            loss function to apply.
+            metric to apply.
+        _behaviour: str
+            metric's behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the metric behaviour
     """
 
-    def __init__(self):
-        """ Instantiates a RegressionMetric. """
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a RegressionMetric.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the metric behaviour
+        """
         # Mother class
-        super(RegressionMetric, self).__init__()
+        super(RegressionMetric, self).__init__(params)
 
     def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
             -> torch.Tensor:

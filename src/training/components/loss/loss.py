@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+from typing import *
+
 # IMPORT: deep learning
 import torch
 
@@ -18,15 +21,28 @@ class Loss:
     ----------
         _loss : torch.nn.Module
             loss function to apply.
+        _behaviour: str
+            loss' behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the loss behaviour
     """
 
     _DEVICE = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
 
-    def __init__(self):
-        """ Instantiates a Loss. """
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a Loss.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the loss behaviour
+        """
         # Attributes
         self._loss: torch.nn.Module = None
         self._behaviour: str = None
+
+        self._params: Dict[str, int] = params
 
     @property
     def behaviour(self) -> str:

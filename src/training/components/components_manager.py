@@ -76,8 +76,8 @@ class TrainingComponentsManager:
         self._optimizer, self._scheduler = self._init_optimizer_scheduler()
 
         # Loss and metrics
-        self._loss: Loss = self._init_loss()
-        self._metrics: Dict[str, Metric] = self._init_metrics()
+        self._loss: Loss = self._init_loss(data_info)
+        self._metrics: Dict[str, Metric] = self._init_metrics(data_info)
 
         # Early stopper
         self._early_stopper: EarlyStopper = EarlyStopper(self._params, self._loss.behaviour)
@@ -99,16 +99,23 @@ class TrainingComponentsManager:
         """
         return self._model
 
-    def _init_model(self, data_info, weights_path) -> torch.nn.Module:
+    def _init_model(self, data_info: Dict[str, int], weights_path: str) -> torch.nn.Module:
         """
         Initializes the training's model.
+
+        Parameters
+        ----------
+            data_info : Dict[str, int]
+                information about the data within the dataset
+            weights_path : str
+                path to the model's weights
 
         Returns
         ----------
             torch.nn.Module
                 training's model
         """
-        model = ModelManager()(self._params["model"], data_info, weights_path)
+        model = ModelManager(data_info)(self._params["model"], weights_path)
         return torch.nn.DataParallel(model)
 
     @property
@@ -165,16 +172,21 @@ class TrainingComponentsManager:
         """
         return self._loss
 
-    def _init_loss(self) -> Loss:
+    def _init_loss(self, data_info: Dict[str, int]) -> Loss:
         """
         Initializes the training's loss function.
+
+        Parameters
+        ----------
+            data_info : Dict[str, int]
+                information about the data within the dataset
 
         Returns
         ----------
             torch.nn.Module
                 training's loss function
         """
-        loss_manager: LossManager = LossManager()
+        loss_manager: LossManager = LossManager(data_info)
         return loss_manager(self._params["training_purpose"], self._params["loss"])
 
     @property
@@ -189,16 +201,21 @@ class TrainingComponentsManager:
         """
         return self._metrics
 
-    def _init_metrics(self) -> Dict[str, Metric]:
+    def _init_metrics(self, data_info: Dict[str, int]) -> Dict[str, Metric]:
         """
         Initializes the training's metrics.
+
+        Parameters
+        ----------
+            data_info : Dict[str, int]
+                information about the data within the dataset
 
         Returns
         ----------
             torch.nn.Module
                 training's metrics
         """
-        metric_manager: MetricManager = MetricManager()
+        metric_manager: MetricManager = MetricManager(data_info)
         return {
             metric_name: metric_manager(self._params["training_purpose"], metric_name)
             for metric_name in self._params["metrics"]

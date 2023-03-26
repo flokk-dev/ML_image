@@ -39,7 +39,7 @@ def dataset_to_modify(training_type, lazy_loading, input_dim, output_dim):
         return UnsupervisedDataSet(
             params={
                 "file_type": "tensor", "lazy_loading": lazy_loading,
-                "input_dim": input_dim, "output_dim": output_dim, "out_channels": 1
+                "input_dim": input_dim, "output_dim": output_dim, "out_channels": 1,
             },
             inputs=[DATA_PATHS[f"{str(input_dim)}D"] for i in range(10)],
         )

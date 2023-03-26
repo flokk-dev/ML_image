@@ -62,7 +62,7 @@ class UnsupervisedLoader(Loader):
 
         nb_paths: int = len(file_paths)
         for idx in range(nb_paths):
-            step: str = "train" if idx < int(nb_paths * self._params["valid_coeff"]) else "valid"
+            step: str = "train" if idx < int(nb_paths * self._params["train_coeff"]) else "valid"
 
             self._input_paths[step].append(file_paths[idx])
 
@@ -158,7 +158,7 @@ class SupervisedLoader(Loader):
 
         nb_paths: int = len(file_paths)
         for idx in range(0, nb_paths, 2):
-            step: str = "train" if idx < int(nb_paths * self._params["valid_coeff"]) else "valid"
+            step: str = "train" if idx < int(nb_paths * self._params["train_coeff"]) else "valid"
 
             self._input_paths[step].append(file_paths[idx])
             self._target_paths[step].append(file_paths[idx+1])

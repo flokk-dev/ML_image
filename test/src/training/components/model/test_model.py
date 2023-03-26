@@ -20,11 +20,6 @@ from src.training.components.model.unet import UNet, AttentionUNet, Transformer,
 # -------------------- FIXTURES -------------------- #
 
 @pytest.fixture(scope="function")
-def model_manager():
-    return ModelManager()
-
-
-@pytest.fixture(scope="function")
 def data_info():
     return {
         "spatial_dims": 2,
@@ -32,6 +27,16 @@ def data_info():
         "in_channels": 1,
         "out_channels": 1
     }
+
+
+@pytest.fixture(scope="function")
+def model_manager():
+    return ModelManager(
+        data_info={
+            "spatial_dims": 2, "img_size": (64, 64),
+            "in_channels": 1, "out_channels": 1
+        }
+    )
 
 
 # -------------------- U-Net -------------------- #

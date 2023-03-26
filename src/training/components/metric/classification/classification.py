@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+from typing import *
+
 # IMPORT: deep learning
 import torch
 from monai.networks import one_hot as one_hot_fn
@@ -21,13 +24,24 @@ class ClassificationMetric(Metric):
     Attributes
     ----------
         _metric : torch.nn.Module
-            loss function to apply.
+            metric to apply.
+        _behaviour: str
+            metric's behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the metric behaviour
     """
 
-    def __init__(self):
-        """ Instantiates a ClassificationMetric. """
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a ClassificationMetric.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the metric behaviour
+        """
         # Mother class
-        super(ClassificationMetric, self).__init__()
+        super(ClassificationMetric, self).__init__(params)
 
     def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
             -> torch.Tensor:
@@ -47,8 +61,8 @@ class ClassificationMetric(Metric):
         if target_batch is None:
             return self._metric(prediction_batch)
 
-        target = one_hot_fn(
-            labels=target_batch, num_classes=prediction_batch.shape[1],
-            dtype=torch.int32
-        )
-        return self._metric(prediction_batch, target)
+        if target_batch.shape[1] < prediction_batch.shape[1]:
+            target_batch = one_hot_fn(labels=target_batch, num_classes=prediction_batch.shape[1])
+
+        target_batch = target_batch.type(torch.int32)
+        return self._metric(prediction_batch, target_batch)

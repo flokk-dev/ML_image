@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+from typing import *
+
 # IMPORT: project
 from .loss import Loss
 
@@ -16,10 +19,24 @@ from .regression import MAELoss, MSELoss, RMSELoss, HuberLoss
 
 
 class LossManager(dict):
-    """ Represents a loss manager. """
+    """
+    Represents a loss manager.
 
-    def __init__(self):
-        """ Instantiates a LossManager. """
+    Attributes
+    ----------
+        _params : Dict[str, int]
+            parameters needed to adjust the losses behaviour
+    """
+
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a LossManager.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the losses behaviour
+        """
         super(LossManager, self).__init__({
             "classification": {
                 "cross entropy": CELoss,
@@ -37,6 +54,9 @@ class LossManager(dict):
                 "huber": HuberLoss
             }
         })
+
+        # Attributes
+        self._params: Dict[str, int] = params
 
     def __call__(self, training_purpose: str, loss_id: str) -> Loss:
         """
@@ -58,6 +78,6 @@ class LossManager(dict):
                 loss id isn't handled by the loss manager
         """
         try:
-            return self[training_purpose][loss_id]()
+            return self[training_purpose][loss_id](self._params)
         except KeyError:
             raise KeyError(f"The {loss_id} isn't handled by the loss manager.")

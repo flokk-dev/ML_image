@@ -15,10 +15,22 @@ from .unet import UNet, AttentionUNet, Transformer, SWinTransformer
 
 
 class ModelManager(dict):
-    """ Represents a model manager. """
+    """
+    Represents a model manager.
 
-    def __init__(self):
-        """ Instantiates a ModelManager. """
+    Attributes
+    ----------
+        _data_info : Dict[str, int]
+            information about the data within the dataset
+    """
+
+    def __init__(self, data_info: Dict[str, int]):
+        """
+        Instantiates a ModelManager.
+
+        data_info : Dict[str, int]
+            information about the data within the dataset
+        """
         super(ModelManager, self).__init__({
             "unet": UNet,
             "attention unet": AttentionUNet,
@@ -26,14 +38,15 @@ class ModelManager(dict):
             "swin transformer": SWinTransformer,
         })
 
-    def __call__(self, model_id: str, data_info: Dict[str, int], weights_path: str = None) -> Any:
+        # Attributes
+        self._data_info: Dict[str, int] = data_info
+
+    def __call__(self, model_id: str, weights_path: str = None) -> Any:
         """
         Parameters
         ----------
             model_id : str
                 id of the model
-            data_info : Dict[str, int]
-                information about the data within the dataset
             weights_path : str
                 path to the model's weights
 
@@ -41,8 +54,13 @@ class ModelManager(dict):
         ----------
             torch.nn.Module
                 model function associated with the model id
+
+        Raises
+        ----------
+            KeyError
+                loss id isn't handled by the loss manager
         """
         try:
-            return self[model_id](data_info, weights_path)
+            return self[model_id](self._data_info, weights_path)
         except KeyError:
             raise KeyError(f"The {model_id} isn't handled by the metric manager.")

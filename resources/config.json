@@ -15,6 +15,7 @@
 
   "training_purpose": "classification",
   "nb_epochs": 25,
+  "train_coeff": 0.8,
   "batch_size": 4,
   "lr": 1e-2,
   "lr_multiplier": 0.9

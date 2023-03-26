@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+from typing import *
+
 # IMPORT: project
 from .metric import Metric
 
@@ -14,10 +17,24 @@ from .regression import MAE, MSE, RMSE, PSNR, SSIM
 
 
 class MetricManager(dict):
-    """ Represents a metric manager. """
+    """
+    Represents a metric manager.
 
-    def __init__(self):
-        """ Instantiates a MetricManager. """
+    Attributes
+    ----------
+        _params : Dict[str, int]
+            parameters needed to adjust the metrics behaviour
+    """
+
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a MetricManager.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the metrics behaviour
+        """
         # Mother class
         super(MetricManager, self).__init__({
             "classification": {
@@ -35,6 +52,9 @@ class MetricManager(dict):
                 # "structural similarity index measure": SSIM
             }
         })
+
+        # Attributes
+        self._params: Dict[str, int] = params
 
     def __call__(self, training_purpose: str, metric_id: str) -> Metric:
         """
@@ -56,6 +76,6 @@ class MetricManager(dict):
                 loss id isn't handled by the loss manager
         """
         try:
-            return self[training_purpose][metric_id]()
+            return self[training_purpose][metric_id](self._params)
         except KeyError:
             raise KeyError(f"The {metric_id} isn't handled by the metric manager.")

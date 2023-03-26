@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+from typing import *
+
 # IMPORT: deep learning
 import torch
 
@@ -21,12 +24,23 @@ class RegressionLoss(Loss):
     ----------
         _loss : torch.nn.Module
             loss function to apply.
+        _behaviour: str
+            loss' behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the loss behaviour
     """
 
-    def __init__(self):
-        """ Instantiates a RegressionLoss. """
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a RegressionLoss.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the loss behaviour
+        """
         # Mother class
-        super(RegressionLoss, self).__init__()
+        super(RegressionLoss, self).__init__(params)
 
     def __call__(self, prediction_batch: torch.Tensor, target_batch: torch.Tensor = None) \
             -> torch.Tensor:

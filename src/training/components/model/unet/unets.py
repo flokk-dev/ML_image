@@ -47,7 +47,7 @@ class UNet(BasicUNet):
         self.to(self._DEVICE)
 
         # Attributes
-        self._name: str = f"UNet_{data_info['spatial_dims']}"
+        self._name: str = f"UNet_{data_info['spatial_dims']}D"
 
         if weights_path is not None:
             self.load_state_dict(torch.load(weights_path))
@@ -96,7 +96,7 @@ class AttentionUNet(AttentionUnet):
         self.to(self._DEVICE)
 
         # Attributes
-        self._name: str = f"AttentionUNet_{data_info['spatial_dims']}"
+        self._name: str = f"AttentionUNet_{data_info['spatial_dims']}D"
 
         if weights_path is not None:
             self.load_state_dict(torch.load(weights_path))
@@ -145,7 +145,7 @@ class Transformer(UNETR):
         self.to(self._DEVICE)
 
         # Attributes
-        self._name: str = f"Transformer_{data_info['spatial_dims']}"
+        self._name: str = f"Transformer_{data_info['spatial_dims']}D"
 
         if weights_path is not None:
             self.load_state_dict(torch.load(weights_path))
@@ -194,7 +194,7 @@ class SWinTransformer(SwinUNETR):
         self.to(self._DEVICE)
 
         # Attributes
-        self._name: str = f"SWinTransformer_{data_info['spatial_dims']}"
+        self._name: str = f"SWinTransformer_{data_info['spatial_dims']}D"
 
         if weights_path is not None:
             self.load_state_dict(torch.load(weights_path))

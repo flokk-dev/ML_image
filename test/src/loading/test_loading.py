@@ -41,7 +41,7 @@ def loading():
             "file_type": "tensor", "lazy_loading": True,
             "file_depth": 0, "dataset_name": "data",
             "input_dim": 2, "output_dim": 2, "out_channels": 1,
-            "batch_size": 4
+            "train_coeff": 0.8, "batch_size": 4
         }
     )
 
@@ -53,7 +53,7 @@ def unsupervised_loading():
             "file_type": "tensor", "lazy_loading": True,
             "file_depth": 0, "dataset_name": "data",
             "input_dim": 2, "output_dim": 2, "out_channels": 1,
-            "batch_size": 4
+            "train_coeff": 0.8, "batch_size": 4
         }
     )
 
@@ -65,7 +65,7 @@ def supervised_loading():
             "file_type": "tensor", "lazy_loading": True,
             "file_depth": 0, "dataset_name": "data",
             "input_dim": 2, "output_dim": 2, "out_channels": 1,
-            "batch_size": 4
+            "train_coeff": 0.8, "batch_size": 4
         }
     )
 

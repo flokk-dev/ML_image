@@ -6,6 +6,9 @@ Version: 1.0
 Purpose:
 """
 
+# IMPORT: utils
+from typing import *
+
 # IMPORT: deep learning
 import torch
 
@@ -21,11 +24,23 @@ class MAELoss(RegressionLoss):
     ----------
         _loss : torch.nn.Module
             loss function to apply.
+        _behaviour: str
+            loss' behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the loss behaviour
     """
 
-    def __init__(self):
-        """ Instantiates a MAELoss. """
-        super(MAELoss, self).__init__()
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a MAELoss.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the loss behaviour
+        """
+        # Mother class
+        super(MAELoss, self).__init__(params)
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.L1Loss().to(self._DEVICE)
@@ -40,11 +55,23 @@ class MSELoss(RegressionLoss):
     ----------
         _loss : torch.nn.Module
             loss function to apply.
+        _behaviour: str
+            loss' behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the loss behaviour
     """
 
-    def __init__(self):
-        """ Instantiates a MSELoss. """
-        super(MSELoss, self).__init__()
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a MSELoss.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the loss behaviour
+        """
+        # Mother class
+        super(MSELoss, self).__init__(params)
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.MSELoss().to(self._DEVICE)
@@ -59,11 +86,23 @@ class RMSELoss(RegressionLoss):
     ----------
         _loss : torch.nn.Module
             loss function to apply.
+        _behaviour: str
+            loss' behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the loss behaviour
     """
 
-    def __init__(self):
-        """ Instantiates a RMSELoss. """
-        super(RMSELoss, self).__init__()
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a RMSELoss.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the loss behaviour
+        """
+        # Mother class
+        super(RMSELoss, self).__init__(params)
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.MSELoss().to(self._DEVICE)
@@ -78,11 +117,23 @@ class HuberLoss(RegressionLoss):
     ----------
         _loss : torch.nn.Module
             loss function to apply.
+        _behaviour: str
+            loss' behaviour
+        _params : Dict[str, int]
+            parameters needed to adjust the loss behaviour
     """
 
-    def __init__(self):
-        """ Instantiates a HuberLoss. """
-        super(HuberLoss, self).__init__()
+    def __init__(self, params: Dict[str, int]):
+        """
+        Instantiates a HuberLoss.
+
+        Parameters
+        ----------
+            params : Dict[str, int]
+                parameters needed to adjust the loss behaviour
+        """
+        # Mother class
+        super(HuberLoss, self).__init__(params)
 
         # Attributes
         self._loss: torch.nn.Module = torch.nn.HuberLoss().to(self._DEVICE)
